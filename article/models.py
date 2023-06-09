@@ -1,12 +1,12 @@
 from django.db import models
-from user import User
+from user.models import User
 
 class Article(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     content = models.TextField()
     article_image = models.ImageField(upload_to='article/%Y/%m', blank=True)
-    song = models.FieldFile(upload_to='songs/', blank=True)
+    song = models.FileField(upload_to='songs/', blank=True)
     good = models.ManyToManyField(User, related_name='good_article',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
