@@ -64,10 +64,10 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
-class Point(TimeStampModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    claid = models.IntegerField()
+# class Point(TimeStampModel):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     claid = models.IntegerField()
 
-    class Meta :
-        db_table = 'point'
+#     class Meta :
+#         db_table = 'point'
 
