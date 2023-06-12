@@ -40,11 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework", # drf
     "rest_framework_simplejwt", # drf-jwt
+    'corsheaders', #corsheaders
     'article',
     'user',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', # corsheaders
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,6 +54,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+	# 허용할 Origin 추가 지금은 그냥 로컬 서버포트만 추가
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:8000",
 ]
 
 ROOT_URLCONF = 'CLAID.urls'

@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import mixins
 
-from models import Comment
-from serializers import CommentSerializer
+from article.models import Comment
+from article.serializers import CommentSerializer
 
 # Create your views here.
 
