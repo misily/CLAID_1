@@ -233,3 +233,38 @@ class KakaoLogoutView(APIView):
             return Response({"message" : "잘못된 요청입니다. 관리자에게 문의하세요."}, status=status.HTTP_400_BAD_REQUEST)
         else:                            
             return Response({"message" : "서버 오류가 발생했습니다. 관리자에게 문의하세요."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class KakaoUserView(APIView):
+    '''
+    작성자 : 이준영
+    내용 : KAKAO_ADMIN_KEY로 Kakao 고유 id를 써서 Kakao DB의 사용자 정보 가져오기
+    최초 작성일 : 2023.06.15
+    '''
+    permission_classes = [AllowAny]
+    def get(self, request, sns_id):
+        response = requests.post(
+            "https://kapi.kakao.com/v2/user/me",
+            data={
+                "target_id_type" : "user_id",
+                "target_id" : sns_id, 
+            },
+            headers={
+                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+                    "Authorization": f"KakaoAK {KAKAO_ADMIN_KEY}",
+                    # "Access-Control-Allow-Origin": "http://127.0.0.1:5500/kakao.html",
+            },
+        )  
+        
+        if response.status_code == 200:
+            user_data = response.json()            
+            data = {            
+            # "sns_id" : user_data.get("id"),
+            "profile_image": user_data.get("properties").get("profile_image"),
+            "email": user_data.get("kakao_account").get("email"),
+            "nickname": user_data.get("properties").get("nickname"),
+            # "gender": user_data.get("properties").get("gender"),
+            # "login_type": "kakao",
+        }    
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Kakao API 요청에 실패했습니다."}, status=response.status_code)
