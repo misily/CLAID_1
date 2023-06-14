@@ -6,11 +6,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.core.mail import send_mail
 
-from my_settings import GOOGLE_API_KEY
-
 from user.models import User
 from user.tokens import account_activation_token
-from user.serializers import UserSerializer, MyTokenObtainPairSerializer
+from user.serializers import UserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
 
 from CLAID.settings import SOCIAL_OUTH_CONFIG
 
@@ -19,15 +17,13 @@ from article.models import Article
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status, permissions
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
-from user.serializers import UserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
 
 
+GOOGLE_API_KEY = SOCIAL_OUTH_CONFIG['GOOGLE_API_KEY']
 
 
 def SocialLogin(** kwargs):
@@ -41,6 +37,10 @@ def SocialLogin(** kwargs):
     email = data.get('email')
     try:
         user = User.objects.get(email=email)
+        return Response(
+            {"refresh": str(refresh), "access": str(access_token.access_token)},
+            status=status.HTTP_200_OK,
+        )
     except User.DoesNotExist:
         new_user = User.objects.create(**data)
         # pw는 사용불가로 지정
@@ -56,6 +56,7 @@ def SocialLogin(** kwargs):
 
 
 class GoogleLogin(APIView):
+    permission_classes = [AllowAny]
     '''
     작성자 :김은수
     내용 : 구글 로그인
@@ -76,11 +77,9 @@ class GoogleLogin(APIView):
             "email": user_data.get("email"),
             "login_type": "google",
         }
-        print(user_data)
+
         return SocialLogin(**data)
     
-# class GoogleCallback(APIView):
-
 
 '''
 작성자 : 이준영

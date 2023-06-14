@@ -22,6 +22,7 @@ SOCIAL_OUTH_CONFIG = {
     'KAKAO_SECRET_KEY': os.environ.get('KAKAO_SECRET_KEY'),
     'KAKAO_ADMIN_KEY': os.environ.get('KAKAO_ADMIN_KEY'),
     'KAKAO_LOGOUT_REDIRECT_URL': os.environ.get('KAKAO_LOGOUT_REDIRECT_URL'),
+    'GOOGLE_API_KEY': os.environ.get('GOOGLE_API_KEY')
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!

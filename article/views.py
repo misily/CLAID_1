@@ -34,60 +34,60 @@ from pathlib import Path
 #         raise error_msg
     
 
-# class ArticleView(APIView):
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class ArticleView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 # # 작성자 : 공민영
 # # 내용 : 모든 게시글 가져오기
 # # 최초 작성일 : 2023.06.08
 # # 업데이트 일자 : 2023.06.08
-#     def get(self, request):
-#         article = Article.objects.all().order_by('-created_at')
-#         serializer = ArticleSerializer(article, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request):
+        article = Article.objects.all().order_by('-created_at')
+        serializer = ArticleSerializer(article, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 # # 작성자 : 공민영
 # # 내용 : 게시글 작성하기
 # # 최초 작성일 : 2023.06.08
 # # 업데이트 일자 : 2023.06.08
-#     def post(self, request):
-#         serializer = ArticleCreateSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save(user=request.user)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        serializer = ArticleCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
 
   
-# class ArticleDetailView(APIView):
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class ArticleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 # # 작성자 : 공민영
 # # 내용 : 게시글 상세보기
 # # 최초 작성일 : 2023.06.08
 # # 업데이트 일자 : 2023.06.08
-#     def get(self, request, user_id):
-#         article = Article.objects.get(id = user_id)
-#         serializer = ArticleSerializer(article)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, user_id):
+        article = Article.objects.get(id = user_id)
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 # # 작성자 : 공민영
 # # 내용 : 게시글 수정하기
 # # 최초 작성일 : 2023.06.08
 # # 업데이트 일자 : 2023.06.08
-#     def put(self, request, user_id):
-#         article = Article.objects.get(id = user_id)
-#         # 본인이 작성한 게시글이 맞다면
-#         if request.user == article.user:
-#             serializer = ArticleCreateSerializer(article, data=request.data)
-#             if serializer.is_valid():
-#                 serializer.save(user=request.user)
-#                 return Response(serializer.data, status=status.HTTP_200_OK)
-#             else:
-#                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         # 본인의 게시글이 아니라면
-#         else:
-#             return Response({'message':'로그인 후 이용해주세요.'}, status=status.HTTP_403_FORBIDDEN)
+    def put(self, request, user_id):
+        article = Article.objects.get(id = user_id)
+        # 본인이 작성한 게시글이 맞다면
+        if request.user == article.user:
+            serializer = ArticleCreateSerializer(article, data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # 본인의 게시글이 아니라면
+        else:
+            return Response({'message':'로그인 후 이용해주세요.'}, status=status.HTTP_403_FORBIDDEN)
     
 
 # 작성자 : 공민영
@@ -95,36 +95,37 @@ from pathlib import Path
 # 최초 작성일 : 2023.06.08
 # 업데이트 일자 : 2023.06.08
 
-    # def delete(self, request, user_id):
-    #     article = Article.objects.get(id=user_id)
-    #     # 본인이 작성한 게시글이 맞다면
-    #     if request.user == article.user:
-    #         article.delete()
-    #         return Response({'message':'게시글이 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
-    #     # 본인의 게시글이 아니라면
-    #     else:
-    #         return Response({'message':'본인 게시글만 삭제 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
+    def delete(self, request, user_id):
+        article = Article.objects.get(id=user_id)
+        # 본인이 작성한 게시글이 맞다면
+        if request.user == article.user:
+            article.delete()
+            return Response({'message':'게시글이 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
+        # 본인의 게시글이 아니라면
+        else:
+            return Response({'message':'본인 게시글만 삭제 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
         
 
-'''
-작성자 :김은수
-내용 : 댓글의 생성과 조회가 가능함
-최초 작성일 : 2023.06.08
-업데이트 일자 : 2023.06.09
-'''
+
 class CommentView(generics.ListCreateAPIView):
+    '''
+    작성자 :김은수
+    내용 : 댓글의 생성과 조회가 가능함
+    최초 작성일 : 2023.06.08
+    업데이트 일자 : 2023.06.09
+    '''
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
     
 
-'''
-작성자 :김은수
-내용 : 댓글의 수정과 삭제가 가능함
-최초 작성일 : 2023.06.07
-업데이트 일자 : 2023.06.09
-'''  
 class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    작성자 :김은수
+    내용 : 댓글의 수정과 삭제가 가능함
+    최초 작성일 : 2023.06.07
+    업데이트 일자 : 2023.06.09
+    '''  
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 

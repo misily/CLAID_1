@@ -24,35 +24,35 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = "__all__"
-# # 작성자 : 공민영
-# # 내용 : 회원가입
-# # 최초 작성일 : 2023.06.08
-# # 업데이트 일자 : 2023.06.08
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+    # 작성자 : 공민영
+    # 내용 : 회원가입
+    # 최초 작성일 : 2023.06.08
+    # 업데이트 일자 : 2023.06.08
 
-#     def create(self, validated_data):
-#         user = super().create(validated_data)
-#         user.is_active = False
-#         password = user.password
-#         # 비밀번호 암호화
-#         user.set_password(password)
-#         user.save()
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        user.is_active = False
+        password = user.password
+        # 비밀번호 암호화
+        user.set_password(password)
+        user.save()
 
-#         message = render_to_string("email_signup_message.html", {
-#             "user":user,
-#             "domain":"localhost:8000",
-#             "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-#             "token": account_activation_token.make_token(user),
-#         })
+        message = render_to_string("email_signup_message.html", {
+            "user":user,
+            "domain":"localhost:8000",
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+            "token": account_activation_token.make_token(user),
+        })
 
-#         subject = "회원가입 인증 메일입니다."
-#         to = [user.email]
-#         from_email = settings.DEFAULT_FROM_EMAIL
-#         EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
-#         return user
+        subject = "회원가입 인증 메일입니다."
+        to = [user.email]
+        from_email = settings.DEFAULT_FROM_EMAIL
+        EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
+        return user
 
     
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
