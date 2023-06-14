@@ -5,8 +5,6 @@ from rest_framework import mixins
 from article.models import Comment
 from article.serializers import CommentSerializer
 
-# Create your views here.
-
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import status, permissions
@@ -23,7 +21,7 @@ import os
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-secret_file = os.path.join(BASE_DIR,'api_key.json')
+secret_file = os.path.join(BASE_DIR,'.env')
 
 with open(secret_file) as f:
     secrets = json.loads(f.read())
