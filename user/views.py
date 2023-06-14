@@ -203,7 +203,6 @@ class KakaoCallBackView(APIView):
         response_data = {'message': message, 'access_token': access_token, 'refresh_token': refresh_token}
         return Response(response_data, status=response_status)
     
-# 로그아웃은 어드민 키로 로그아웃 하는 것으로 하자!
 class KakaoLogoutView(APIView):
     '''
     작성자 : 이준영
