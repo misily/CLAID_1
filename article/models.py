@@ -12,6 +12,12 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     #Tags = models.ManytoManyField(Tag, related_name='articles',blank=True)
     #Genre = models.ManytoManyField(Genre, related_name='articles',blank=True)
+    hits = models.IntegerField(default=0)
+
+    @property
+    def click(self):
+        self.hits +=1
+        self.save()
 
 
 class Comment(models.Model):
