@@ -268,3 +268,26 @@ class KakaoUserView(APIView):
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Kakao API 요청에 실패했습니다."}, status=response.status_code)
+        
+class KakaoUnLinkView(APIView):
+    '''
+    작성자 : 이준영
+    내용 : JWT Token으로 접속한 Kakao user의 request.user.email로 DB의 Kakao access_token을 찾아 Kakao access_token으로 연결 끊기
+    최초 작성일 : 2023.06.15
+    '''
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = get_object_or_404(User, email=request.user.email)        
+        access_token = user.access_token        
+        
+        # 연결한 정보들 삭제 할 지 추후 회의를 해야함.
+        
+        headers = {
+            "Content-Type": "application/x--www-form-urlencoded",
+            "Authorization": f'Bearer {access_token}'
+            }
+        response = requests.post('https://kapi.kakao.com/v1/user/unlink', headers=headers)
+        if response.status_code == 200:
+            return Response({"message" : "연결 끊기에 성공하였습니다."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message" : "토큰이 유효하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
