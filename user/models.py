@@ -38,6 +38,7 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
+    login_type = models.CharField(max_length=50, default=False)
     password = models.CharField(max_length=100, validators=[check_password])
     is_subscribe = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
