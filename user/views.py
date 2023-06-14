@@ -202,3 +202,34 @@ class KakaoCallBackView(APIView):
         # response에 답기
         response_data = {'message': message, 'access_token': access_token, 'refresh_token': refresh_token}
         return Response(response_data, status=response_status)
+    
+class KakaoLogoutView(APIView):
+    '''
+    작성자 : 이준영
+    내용 : JWT Token을 받고 request의 email로 DB의 kakao token을 찾아 요청을 보내
+    kakao token 만료를 시키고 DB의 kakao token 삭제하는 보안 작업
+    최초 작성일 : 2023.06.15
+    '''
+    permission_classes = [IsAuthenticated]    
+    def post(self, request):
+        user = get_object_or_404(User, email=request.user.email)
+        
+        access_token = user.access_token
+        
+        # 로그아웃 (DB에 저장한 access_token을 사용한)
+        # 로그아웃 되면 토큰이 만료됨.
+        headers = {"Authorization": f'Bearer {access_token}'}
+        logout_response = requests.post('https://kapi.kakao.com/v1/user/logout', headers=headers)
+        
+        if logout_response.status_code == 200:
+            # + 카카오의 접근토큰 삭제
+            user.access_token = None
+            # 토큰 만료시간도 해야하나?
+            user.save()
+            return Response({"message" : "로그아웃 되셨습니다."}, status=status.HTTP_200_OK)
+        elif logout_response.status_code == 401:
+            return Response({"message" : "토큰이 유효하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        elif logout_response.status_code == 400:
+            return Response({"message" : "잘못된 요청입니다. 관리자에게 문의하세요."}, status=status.HTTP_400_BAD_REQUEST)
+        else:                            
+            return Response({"message" : "서버 오류가 발생했습니다. 관리자에게 문의하세요."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
