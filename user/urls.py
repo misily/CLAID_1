@@ -12,6 +12,8 @@ urlpatterns = [
     path("login/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("logout/", views.UserLogoutView.as_view(), name='logout'),
     
-    
     path('kakao/login/callback/', views.KakaoCallBackView.as_view()),
+    path('kakao/<int:sns_id>/', views.KakaoUserView.as_view()),    
+    path('kakao/unlink/', views.KakaoUnLinkView.as_view()),    
+    path('kakao/logout/', views.KakaoLogoutView.as_view()),
 ]
