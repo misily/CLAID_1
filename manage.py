@@ -4,6 +4,9 @@ import os
 import sys
 import dotenv
 
+
+
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CLAID.settings')
