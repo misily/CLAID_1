@@ -273,6 +273,17 @@ files = [
 ]
 
 [[package]]
+name = "schedule"
+version = "1.2.0"
+description = "Job scheduling for humans."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "schedule-1.2.0-py2.py3-none-any.whl", hash = "sha256:415908febaba0bc9a7c727a32efb407d646fe994367ef9157d123aabbe539ea8"},
+    {file = "schedule-1.2.0.tar.gz", hash = "sha256:b4ad697aafba7184c9eb6a1e2ebc41f781547242acde8ceae9a0a25b04c0922d"},
+]
+
+[[package]]
 name = "sqlparse"
 version = "0.4.4"
 description = "A non-validating SQL parser."
@@ -313,4 +324,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.5"
-content-hash = "e5641894a030f03807327560200828e74469c49de2f7b7838dcd7a7bd07779b3"
+content-hash = "6417cb7255e9f8946082e7f14c82cd6de63ce2f87d131f6bfb5d498ff13a5986"

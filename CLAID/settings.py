@@ -33,7 +33,7 @@ def get_secret(setting, secrets=secrets):
         raise ImproperlyConfigured(error_msg)
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.path.join("SECRET_KEY")
 
 
 # Quick-start development settings - unsuitable for production
