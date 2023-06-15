@@ -11,14 +11,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media
-<<<<<<< HEAD
 my_settings.py
-=======
-api_key.json
-secret.json
-.secret.json
-
->>>>>>> dbf2cbfcf07e485b7731b0a760dd5b4632e6b63a
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
 # <django-project-name>/staticfiles/
