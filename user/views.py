@@ -93,10 +93,13 @@ KAKAO_ADMIN_KEY = SOCIAL_OUTH_CONFIG['KAKAO_ADMIN_KEY']
 KAKAO_LOGOUT_REDIRECT_URL = SOCIAL_OUTH_CONFIG['KAKAO_LOGOUT_REDIRECT_URL']
 
 class UserSignupView(APIView):
-# 작성자 : 공민영
-# 내용 : 회원가입
-# 최초 작성일 : 2023.06.08
-# 업데이트 일자 : 2023.06.08
+    permission_classes = [AllowAny]
+    '''
+    작성자 : 공민영
+    내용 : 회원가입
+    최초 작성일 : 2023.06.08
+    업데이트 일자 : 2023.06.08
+    '''
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -107,19 +110,23 @@ class UserSignupView(APIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-# 작성자 : 공민영
-# 내용 : 로그인
-# 최초 작성일 : 2023.06.08
-# 업데이트 일자 : 2023.06.08
+    '''
+    작성자 : 공민영
+    내용 : 로그인
+    최초 작성일 : 2023.06.08
+    업데이트 일자 : 2023.06.08
+    '''
     serializer_class = MyTokenObtainPairSerializer
 
 
 class UserActivate(APIView):
     permission_classes = [AllowAny]
-# 작성자 : 공민영
-# 내용 : 이메일 인증
-# 최초 작성일 : 2023.06.08
-# 업데이트 일자 : 2023.06.08
+    '''
+    작성자 : 공민영
+    내용 : 이메일 인증
+    최초 작성일 : 2023.06.08
+    업데이트 일자 : 2023.06.08
+    '''
     def get(self, request, uidb64, token):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
@@ -138,20 +145,24 @@ class UserActivate(APIView):
         except Exception as e:
             print(traceback.format_exc())
 
-    # 작성자 : 공민영
-    # 내용 : 이메일 성공시
-    # 최초 작성일 : 2023.06.08
-    # 업데이트 일자 : 2023.06.08
+'''
+작성자 : 공민영
+내용 : 이메일 성공시
+최초 작성일 : 2023.06.08
+업데이트 일자 : 2023.06.08
+'''
 def active_success(request):
     return render(request, "email_active.html")
 
 
 
 class UserLogoutView(APIView):
-    # 작성자 : 공민영
-    # 내용 : 로그아웃
-    # 최초 작성일 : 2023.06.08
-    # 업데이트 일자 : 2023.06.08
+    '''
+    작성자 : 공민영
+    내용 : 로그아웃
+    최초 작성일 : 2023.06.08
+    업데이트 일자 : 2023.06.08
+    '''
     def post(self, request):
         response = Response({"message": "로그아웃 완료"}, status=status.HTTP_200_OK)
         response.delete_cookie("access")
