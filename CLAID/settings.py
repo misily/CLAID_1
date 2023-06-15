@@ -8,6 +8,23 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+secret_file = os.path.join(BASE_DIR, '.env')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+
+SECRET_KEY = os.path.join("SECRET_KEY")
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
