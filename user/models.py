@@ -79,6 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     login_type = models.CharField(
         "로그인유형", max_length=10, choices=LOGIN_TYPES, default="normal"
     )
+
     is_active = models.BooleanField("활성화여부", default=True)
     is_admin = models.BooleanField("관리자여부", default=False)
     objects = UserManager()

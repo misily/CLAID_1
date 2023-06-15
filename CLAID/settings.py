@@ -7,6 +7,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -21,6 +22,7 @@ SOCIAL_OUTH_CONFIG = {
     'KAKAO_SECRET_KEY': os.environ.get('KAKAO_SECRET_KEY'),
     'KAKAO_ADMIN_KEY': os.environ.get('KAKAO_ADMIN_KEY'),
     'KAKAO_LOGOUT_REDIRECT_URL': os.environ.get('KAKAO_LOGOUT_REDIRECT_URL'),
+    'GOOGLE_API_KEY': os.environ.get('GOOGLE_API_KEY')
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -38,19 +40,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # 추가 목록 #
-    "rest_framework",
-    "rest_framework_simplejwt",
+    # 추가한 것들
+    "rest_framework", # drf
+    "rest_framework_simplejwt", # drf-jwt
+    'corsheaders', #corsheaders
+
     'article',
     'user.apps.UserConfig',
     'django.contrib.sites',
-    'corsheaders',
 ]
 
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', # corsheaders
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -60,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:5500',
