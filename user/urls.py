@@ -15,8 +15,8 @@ urlpatterns = [
     path('google/', views.GoogleLogin.as_view(), name='googlelogin'),
     path('google/callback/', views.GoogleLogin.as_view(), name='googlelogin'),
 
+    path('kakao/login/callback/', views.KakaoCallBackView.as_view()),
     path('kakao/<int:sns_id>/', views.KakaoUserView.as_view()),    
     path('kakao/unlink/', views.KakaoUnLinkView.as_view()),    
     path('kakao/logout/', views.KakaoLogoutView.as_view()),
 ]
-

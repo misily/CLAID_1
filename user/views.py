@@ -9,7 +9,7 @@ from django.contrib import messages
 
 from user.models import User
 from user.tokens import account_activation_token
-from user.serializers import UserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
+from user.serializers import UserSerializer, SNSUserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
 
 from CLAID.settings import SOCIAL_OUTH_CONFIG
 
@@ -25,62 +25,6 @@ from rest_framework.generics import get_object_or_404
 
 
 GOOGLE_API_KEY = SOCIAL_OUTH_CONFIG['GOOGLE_API_KEY']
-
-
-def SocialLogin(** kwargs):
-    '''
-    작성자 :김은수
-    내용 : 소셜 로그인
-    최초 작성일 : 2023.06.13
-    업데이트 일자 : 2023.06.13
-    '''  
-    data = {k: v for k, v in kwargs.items() if v is not None}
-    email = data.get('email')
-    try:
-        user = User.objects.get(email=email)
-        return Response(
-            {"refresh": str(refresh), "access": str(access_token.access_token)},
-            status=status.HTTP_200_OK,
-        )
-    except User.DoesNotExist:
-        new_user = User.objects.create(**data)
-        # pw는 사용불가로 지정
-        new_user.set_unusable_password()
-        new_user.save()
-        # 이후 토큰 발급해서 프론트로
-        refresh = RefreshToken.for_user(new_user)
-        access_token = CustomTokenObtainPairSerializer.get_token(new_user)
-        return Response(
-            {"refresh": str(refresh), "access": str(access_token.access_token)},
-            status=status.HTTP_200_OK,
-        )
-
-
-class GoogleLogin(APIView):
-    permission_classes = [AllowAny]
-    '''
-    작성자 :김은수
-    내용 : 구글 로그인
-    최초 작성일 : 2023.06.12
-    업데이트 일자 : 2023.06.13
-    '''  
-    def get(self, request):
-        return Response(GOOGLE_API_KEY, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        access_token = request.data["access_token"]
-        user_data = requests.get(
-            "https://www.googleapis.com/oauth2/v2/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"},
-        )
-        user_data = user_data.json()
-        data = {
-            "email": user_data.get("email"),
-            "login_type": "google",
-        }
-
-        return SocialLogin(**data)
-    
 
 '''
 작성자 : 이준영
@@ -177,7 +121,6 @@ class KakaoCallBackView(APIView):
         최초 작성일 : 2023.06.14
         '''
         code = request.GET.get('code')
-        
         kakao_token_api = 'https://kauth.kakao.com/oauth/token'
         data = {
             'grant_type' : 'authorization_code',
@@ -235,7 +178,7 @@ class KakaoCallBackView(APIView):
                 message = "신규 유저 정보 생성!"
                 response_status = status.HTTP_200_OK
             else:
-                serializer = UserSerializer(kakao_user, data=kakao_data, partial=True)
+                serializer = SNSUserSerializer(kakao_user, data=kakao_data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     message = "기존 유저 정보 업데이트!"
@@ -354,3 +297,56 @@ class KakaoUnLinkView(APIView):
             return Response({"message" : "연결 끊기에 성공하였습니다."}, status=status.HTTP_200_OK)
         else:
             return Response({"message" : "토큰이 유효하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
+class GoogleLogin(APIView):
+    permission_classes = [AllowAny]
+    '''
+    작성자 :김은수
+    내용 : 구글 로그인
+    최초 작성일 : 2023.06.12
+    업데이트 일자 : 2023.06.13
+    '''  
+    def get(self, request):
+        return Response(GOOGLE_API_KEY, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        access_token = request.data["access_token"]
+        user_data = requests.get(
+            "https://www.googleapis.com/oauth2/v2/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        user_data = user_data.json()
+        data = {
+            "email": user_data.get("email"),
+            "login_type": "google",
+        }
+
+        return SocialLogin(**data)
+
+def SocialLogin(** kwargs):
+    '''
+    작성자 :김은수
+    내용 : 소셜 로그인
+    최초 작성일 : 2023.06.13
+    업데이트 일자 : 2023.06.13
+    '''  
+    data = {k: v for k, v in kwargs.items() if v is not None}
+    email = data.get('email')
+    try:
+        user = User.objects.get(email=email)
+        return Response(
+            {"refresh": str(refresh), "access": str(access_token.access_token)},
+            status=status.HTTP_200_OK,
+        )
+    except User.DoesNotExist:
+        new_user = User.objects.create(**data)
+        # pw는 사용불가로 지정
+        new_user.set_unusable_password()
+        new_user.save()
+        # 이후 토큰 발급해서 프론트로
+        refresh = RefreshToken.for_user(new_user)
+        access_token = CustomTokenObtainPairSerializer.get_token(new_user)
+        return Response(
+            {"refresh": str(refresh), "access": str(access_token.access_token)},
+            status=status.HTTP_200_OK,
+        )
