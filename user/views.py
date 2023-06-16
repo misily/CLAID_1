@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 
 from user.models import User
 from user.tokens import account_activation_token
-from user.serializers import UserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
+from user.serializers import UserSerializer, MyTokenObtainPairSerializer
 
 from CLAID.settings import SOCIAL_OUTH_CONFIG
 
@@ -48,9 +48,9 @@ def SocialLogin(** kwargs):
         new_user.save()
         # 이후 토큰 발급해서 프론트로
         refresh = RefreshToken.for_user(new_user)
-        access_token = CustomTokenObtainPairSerializer.get_token(new_user)
+        access_token = MyTokenObtainPairSerializer.get_token(new_user)
         return Response(
-            {"refresh": str(refresh), "access": str(access_token.access_token)},
+            {"refresh_token": str(refresh), "access_token": str(access_token.access_token)},
             status=status.HTTP_200_OK,
         )
 
@@ -76,8 +76,11 @@ class GoogleLogin(APIView):
         data = {
             "email": user_data.get("email"),
             "login_type": "google",
+            "sns_id" : "sns_id",
+            "nickname" : "nickname",
+            "profile_image" : "profile_image",
         }
-
+        print(user_data.json())
         return SocialLogin(**data)
     
 
