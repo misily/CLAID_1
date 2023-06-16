@@ -23,6 +23,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 
+# class UserSerializer(serializers.ModelSerializer):
+#     '''
+#     작성자 : 이준영
+#     내용 : 일반 로그인 기능 구현 전 sns 로그인
+#     최초 작성일 : 2023.06.14
+#     '''
+#     class Meta:
+#         model = User
+#         fields = "__all__"
+    
+#     def create(self, validated_data):        
+#         user = super().create(validated_data)
+#         user.save()        
+#         return user
+    
+#     def update(self, instance, validated_data):
+#         user = super().update(instance, validated_data)
+#         user.save()
+#         return user
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,22 +99,4 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         user = self.user
         return user
     
-class UserSerializer(serializers.ModelSerializer):
-    '''
-    작성자 : 이준영
-    내용 : 일반 로그인 기능 구현 전 sns 로그인
-    최초 작성일 : 2023.06.14
-    '''
-    class Meta:
-        model = User
-        fields = "__all__"
-    
-    def create(self, validated_data):        
-        user = super().create(validated_data)
-        user.save()        
-        return user
-    
-    def update(self, instance, validated_data):
-        user = super().update(instance, validated_data)
-        user.save()
-        return user
+
