@@ -351,3 +351,20 @@ class KakaoUnLinkView(APIView):
             return Response({"message" : "연결 끊기에 성공하였습니다."}, status=status.HTTP_200_OK)
         else:
             return Response({"message" : "토큰이 유효하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+'''
+작성자 : 왕규원
+내용 : FOLLOW
+최초 작성일 : 2023.06.16
+'''
+class FollowView(APIView):
+    def post(self, request, user_id):
+        following = get_object_or_404(User, id=user_id)
+        follower = request.user
+        if follower in following.followers.all():
+            following.followers.remove(follower)
+            return Response("팔로우를 취소하였습니다.", status=status.HTTP_200_OK)
+        else :
+            following.followers.add(follower)
+            return Response("팔로우하였습니다.", status=status.HTTP_200_OK)
