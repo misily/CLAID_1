@@ -60,12 +60,18 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-        message = render_to_string("email_signup_message.html", {
-            "user":user,
-            "domain":"localhost:8000",
-            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-            "token": account_activation_token.make_token(user),
-        })
+        message = (
+        "안녕하세요, {nickname}님!\n\n"
+        "회원가입 인증을 완료하려면 다음 링크를 클릭해주세요:\n"
+        "http://{domain}/user/activate/{uid}/{token}\n\n"
+        "---\n"
+        "감사합니다!"
+        ).format(
+            nickname=user.nickname,
+            domain="localhost:8000",
+            uid=urlsafe_base64_encode(force_bytes(user.pk)),
+            token=account_activation_token.make_token(user),
+        )
 
         subject = "회원가입 인증 메일입니다."
         to = [user.email]
