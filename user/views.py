@@ -9,7 +9,7 @@ from django.contrib import messages
 
 from user.models import User
 from user.tokens import account_activation_token
-from user.serializers import UserSerializer, SNSUserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
+from user.serializers import UserSerializer, SNSUserSerializer, MyTokenObtainPairSerializer
 
 from CLAID.settings import SOCIAL_OUTH_CONFIG
 
@@ -23,7 +23,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
 
-
+'''
+작성자 : 김은수
+내용 : GOOGLE_API_KEY
+최초 작성일 : 2023.06.14
+'''
 GOOGLE_API_KEY = SOCIAL_OUTH_CONFIG['GOOGLE_API_KEY']
 
 '''
@@ -137,6 +141,7 @@ class KakaoCallBackView(APIView):
         refresh_token = token_response.json().get('refresh_token')
         refresh_token_expires_in = token_response.json().get('refresh_token_expires_in')
         
+        print(access_token)
         '''
         작성자 : 이준영
         내용 : 카카오 Token으로 사용자 정보를 받고,
@@ -299,29 +304,79 @@ class KakaoUnLinkView(APIView):
             return Response({"message" : "토큰이 유효하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
 class GoogleLogin(APIView):
-    permission_classes = [AllowAny]
     '''
     작성자 :김은수
     내용 : 구글 로그인
     최초 작성일 : 2023.06.12
     업데이트 일자 : 2023.06.13
     '''  
+    permission_classes = [AllowAny]
     def get(self, request):
+        # frontend_base_url = "http:127.0.0.1/5500"
+        # client_id = GOOGLE_API_KEY
+        # redirect_uri = frontend_base_url +  '/temp.html'
+        # scope = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+        # param = f'scope={scope}&include_granted_scopes=true&response_type=token&state=pass-through value&prompt=consent&client_id={client_id}&redirect_uri={redirect_uri}';
+        # path = 'https://accounts.google.com/o/oauth2/v2/auth'
+        # token_response = requests.post(path, param)
+        # print(token_response)
+        # return redirect(path+param)
         return Response(GOOGLE_API_KEY, status=status.HTTP_200_OK)
     
     def post(self, request):
-        access_token = request.data["access_token"]
+        access_token = None
+        print(request.data)
+        if request.data["access_token"]:
+            access_token = request.data["access_token"]
+        else:
+            return Response({'msg':'google access_token 받아오지 못함'})
+        
+        '''
+        작성자 :김은수
+        내용 : 구글 oauth2 서버에 요청해서 유저정보 받아오기,
+        받을 수 있는 유저 정보 : id, email, verified_email, name, given_name, picture, locale
+        최초 작성일 : 2023.06.16
+        업데이트 일자 : 2023.06.16
+        '''
+        # google_answer_url = request.data["params"]
+        # print(f'구글 url{google_answer_url}')
         user_data = requests.get(
             "https://www.googleapis.com/oauth2/v2/userinfo",
             headers={"Authorization": f"Bearer {access_token}"},
         )
+        
         user_data = user_data.json()
-        data = {
-            "email": user_data.get("email"),
-            "login_type": "google",
-        }
 
-        return SocialLogin(**data)
+        # expires_in = token_response.json().get('expires_in')
+        # refresh_token = token_response.json().get('refresh_token')
+        # refresh_token_expires_in = token_response.json().get('refresh_token_expires_in')
+        # print(user_data)
+        data = {
+            "profile_image": user_data.get("picture"),
+            "email": user_data.get("email"),
+            "nickname": user_data.get("name"),
+            # "login_type": "google",
+        }
+        
+        try:
+            google_user, created = User.objects.get_or_create(email=user_data.get("email"), defaults=data)
+            if created:
+                message = "신규 유저 정보 생성!"
+                response_status = status.HTTP_200_OK
+            else:
+                serializer = SNSUserSerializer(google_user, data=data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    message = "기존 유저 정보 업데이트!"
+                    response_status = status.HTTP_200_OK
+                else:
+                    return Response({"message": {serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": "DB 저장 오류입니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+
+        return Response(message, status=response_status)
 
 def SocialLogin(** kwargs):
     '''
@@ -345,7 +400,7 @@ def SocialLogin(** kwargs):
         new_user.save()
         # 이후 토큰 발급해서 프론트로
         refresh = RefreshToken.for_user(new_user)
-        access_token = CustomTokenObtainPairSerializer.get_token(new_user)
+        access_token = MyTokenObtainPairSerializer.get_token(new_user)
         return Response(
             {"refresh": str(refresh), "access": str(access_token.access_token)},
             status=status.HTTP_200_OK,
