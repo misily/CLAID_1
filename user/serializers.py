@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
-from user.models import User
+from user.models import User, Profile
 
 from article.models import Article
 from django.core.mail import EmailMessage
@@ -105,4 +105,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         user = self.user
         return user
     
-
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['nickname', 'profile_image']
