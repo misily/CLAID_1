@@ -14,13 +14,6 @@ from user.tokens import account_activation_token
 
 
     
-# class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-#     @classmethod
-#     def get_token(cls, user):
-#         token = super().get_token(user)
-#         token["email"] = user.email
-#         token["login_type"] = user.login_type
-#         return token
 
 
 class SNSUserSerializer(serializers.ModelSerializer):
