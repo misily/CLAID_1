@@ -380,7 +380,6 @@ class GoogleLogin(APIView):
         access_token = token.access_token
         refesh = token
 
-        print(str(access_token),"리프레쉬", str(refesh))
         return Response({"message":message, "access_token":str(access_token), "refresh_token":str(refesh)}, status=response_status)
 
 
