@@ -48,3 +48,28 @@ class HitsCount(models.Model):
 
     def __unicode__(self):
         return self.ip
+    
+# 보컬로이드 자랑
+class VocalArticle(models.Model):
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%H-%M-%S")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    voice = models.CharField(max_length=100)
+    song_info = models.CharField(max_length=100) #원곡정보
+    song = models.FileField(upload_to='songs/%Y/%m/%d/'+formatted_time)
+    good = models.ManyToManyField(User, related_name='good_vocal',blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # hits = models.PositiveIntegerField(default=0)
+
+# 방법공유
+class VocalNotice(models.Model):
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%H-%M-%S")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    article_image = models.ImageField(upload_to='article/%Y/%m/%d/'+formatted_time, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # hits = models.PositiveIntegerField(default=0)
