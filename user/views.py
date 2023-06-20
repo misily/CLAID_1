@@ -376,9 +376,11 @@ class GoogleLogin(APIView):
         except Exception as e:
             return Response({"message": "DB 저장 오류입니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        access_token = MyTokenObtainPairSerializer.get_token(google_user)
-        refesh = RefreshToken.for_user(google_user)
-        
+        token = MyTokenObtainPairSerializer.get_token(google_user)
+        access_token = token.access_token
+        refesh = token
+
+        print(str(access_token),"리프레쉬", str(refesh))
         return Response({"message":message, "access_token":str(access_token), "refresh_token":str(refesh)}, status=response_status)
 
 
