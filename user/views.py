@@ -329,46 +329,59 @@ class GoogleLogin(APIView):
         return Response(GOOGLE_API_KEY, status=status.HTTP_200_OK)
     
     def post(self, request):
-        access_token = request.data["access_token"]
+        google_access_token = None
+        if request.data["access_token"]:
+            google_access_token = request.data["access_token"]
+        else:
+            return Response({'msg':'google access_token 받아오지 못함'})
+        
+        '''
+        작성자 :김은수
+        내용 : 구글 oauth2 서버에 요청해서 유저정보 받아오기,
+        받을 수 있는 유저 정보 : id, email, verified_email, name, given_name, picture, locale
+        최초 작성일 : 2023.06.16
+        업데이트 일자 : 2023.06.16
+        '''
+
         user_data = requests.get(
             "https://www.googleapis.com/oauth2/v2/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"},
+            headers={"Authorization": f"Bearer {google_access_token}"},
         )
+        
         user_data = user_data.json()
+
+    
         data = {
+            "profile_image": user_data.get("picture"),
             "email": user_data.get("email"),
-            "login_type": "google",
+            "nickname": user_data.get("name"),
+            # "login_type": "google",
         }
+        
+        email=user_data.get("email")
 
-        return SocialLogin(**data)
+        try:
+            google_user, created = User.objects.get_or_create(email=user_data.get("email"), defaults=data)
+            if created:
+                message = "신규 유저 정보 생성!"
+                response_status = status.HTTP_200_OK
+            else:
+                serializer = SNSUserSerializer(google_user, data=data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    message = "기존 유저 정보 업데이트!"
+                    response_status = status.HTTP_200_OK
+                else:
+                    return Response({"message": {serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": "DB 저장 오류입니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        token = MyTokenObtainPairSerializer.get_token(google_user)
+        access_token = token.access_token
+        refesh = token
 
-def SocialLogin(** kwargs):
-    '''
-    작성자 :김은수
-    내용 : 소셜 로그인
-    최초 작성일 : 2023.06.13
-    업데이트 일자 : 2023.06.13
-    '''  
-    data = {k: v for k, v in kwargs.items() if v is not None}
-    email = data.get('email')
-    try:
-        user = User.objects.get(email=email)
-        return Response(
-            {"refresh": str(refresh), "access": str(access_token.access_token)},
-            status=status.HTTP_200_OK,
-        )
-    except User.DoesNotExist:
-        new_user = User.objects.create(**data)
-        # pw는 사용불가로 지정
-        new_user.set_unusable_password()
-        new_user.save()
-        # 이후 토큰 발급해서 프론트로
-        refresh = RefreshToken.for_user(new_user)
-        access_token = CustomTokenObtainPairSerializer.get_token(new_user)
-        return Response(
-            {"refresh": str(refresh), "access": str(access_token.access_token)},
-            status=status.HTTP_200_OK,
-        )
+        return Response({"message":message, "access_token":str(access_token), "refresh_token":str(refesh)}, status=response_status)
+
 
 class ProfileAPIView(APIView):
     permission_classes = [IsAuthenticated]

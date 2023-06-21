@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import mixins
 
-from article.models import Comment
+from article.models import Comment, VocalHitsCount, NoticeHitsCount
 from article.serializers import CommentSerializer
 
 from rest_framework import status
@@ -13,10 +13,10 @@ from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from article.models import Article, HitsCount, get_client_ip
+from article.models import Article, VocalArticle, VocalNotice, HitsCount, get_client_ip
 from datetime import datetime, timedelta
 from django.utils import timezone
-from article.serializers import ArticleSerializer, ArticleCreateSerializer
+from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalArticleSerializer, VocalArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer
 from rest_framework import status
 from pathlib import Path
 
@@ -190,3 +190,182 @@ class CommentGoodView(APIView):
         else:
             comment.good.add(request.user.id)
             return Response("해당 댓글에 좋아요를 눌렀습니다.", status=status.HTTP_200_OK)
+        
+
+class VocalArticleView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    '''
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 자랑 게시글 가져오기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def get(self, request):
+        article = VocalArticle.objects.all().order_by('-created_at')
+        serializer = VocalArticleSerializer(article, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    '''    
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 자랑 게시글 작성하기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def post(self, request):
+        serializer = VocalArticleCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class VocalArticleDetailView(APIView):
+    queryset = VocalArticle.objects.all().order_by('-pk')
+    serializer_class = VocalArticleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    '''    
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 자랑 게시글 상세보기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def get(self, request, article_id):
+        article = get_object_or_404(VocalArticle, id = article_id)
+        serializer = VocalArticleSerializer(article)
+        ip = get_client_ip(request)
+        expire_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)  # 다음 날 자정을 만료 날짜로 설정
+        cnt = VocalHitsCount.objects.filter(ip=ip, article=article, expire_date__gt=timezone.now()).count() # 만료 기간 >= 현재시간, 즉 아직 만료 되지 않은 경우를 count
+        if cnt == 0:  #만료가 됐다 = article_hitscount 테이블에 없는 경우
+            article.click
+            hc = VocalHitsCount(ip=ip, article=article, expire_date=expire_date)
+            hc.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+    '''       
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 자랑 게시글 수정하기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def patch(self, request, article_id):
+            article = get_object_or_404(VocalArticle, id = article_id)
+                # 본인이 작성한 게시글이 맞다면
+            if request.user == article.user:
+                serializer = VocalArticleCreateSerializer(article, data=request.data)
+                if serializer.is_valid():
+                    serializer.save(user=request.user)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # 본인의 게시글이 아니라면
+            else:
+                return Response({'message':'본인 게시글만 수정 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+    '''
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 자랑 게시글 삭제하기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def delete(self, request, article_id):
+            article = get_object_or_404(VocalArticle, id = article_id)
+                # 본인이 작성한 게시글이 맞다면
+            if request.user == article.user:
+                article.delete()
+                return Response({'message':'게시글이 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
+                # 본인의 게시글이 아니라면
+            else:
+                return Response({'message':'본인 게시글만 삭제 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
+            
+
+# 방법공유
+class VocalNoticeView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    '''
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 방법공유 게시글 가져오기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def get(self, request):
+        article = VocalNotice.objects.all().order_by('-created_at')
+        serializer = VocalNoticeSerializer(article, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    '''    
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 방법공유 게시글 작성하기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def post(self, request):
+        serializer = VocalNoticeCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class VocalNoticeDetailView(APIView):
+    queryset = VocalNotice.objects.all().order_by('-pk')
+    serializer_class = VocalNoticeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    '''    
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 방법공유 게시글 상세보기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def get(self, request, article_id):
+        article = get_object_or_404(VocalNotice, id = article_id)
+        serializer = VocalNoticeSerializer(article)
+        ip = get_client_ip(request)
+        expire_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)  # 다음 날 자정을 만료 날짜로 설정
+        cnt = NoticeHitsCount.objects.filter(ip=ip, article=article, expire_date__gt=timezone.now()).count() # 만료 기간 >= 현재시간, 즉 아직 만료 되지 않은 경우를 count
+        if cnt == 0:  #만료가 됐다 = article_hitscount 테이블에 없는 경우
+            article.click
+            hc = NoticeHitsCount(ip=ip, article=article, expire_date=expire_date)
+            hc.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+    '''       
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 방법공유 게시글 수정하기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def patch(self, request, article_id):
+            article = get_object_or_404(VocalNotice, id = article_id)
+                # 본인이 작성한 게시글이 맞다면
+            if request.user == article.user:
+                serializer = VocalNoticeCreateSerializer(article, data=request.data)
+                if serializer.is_valid():
+                    serializer.save(user=request.user)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # 본인의 게시글이 아니라면
+            else:
+                return Response({'message':'본인 게시글만 수정 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+    '''
+    작성자 : 공민영, 왕규원
+    내용 : 보컬로이드 방법공유 게시글 삭제하기
+    최초 작성일 : 2023.06.19
+    업데이트 일자 : 2023.06.19
+    '''
+    def delete(self, request, article_id):
+            article = get_object_or_404(VocalNotice, id = article_id)
+                # 본인이 작성한 게시글이 맞다면
+            if request.user == article.user:
+                article.delete()
+                return Response({'message':'게시글이 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
+                # 본인의 게시글이 아니라면
+            else:
+                return Response({'message':'본인 게시글만 삭제 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
