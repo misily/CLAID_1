@@ -41,13 +41,6 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-class HitsCount(models.Model):
-    ip = models.CharField(max_length=30)
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    expire_date = models.DateTimeField(default=timezone.now)
-
-    def __unicode__(self):
-        return self.ip
     
 # 보컬로이드 자랑
 class VocalArticle(models.Model):
@@ -60,7 +53,12 @@ class VocalArticle(models.Model):
     good = models.ManyToManyField(User, related_name='good_vocal',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # hits = models.PositiveIntegerField(default=0)
+    hits = models.PositiveIntegerField(default=0)
+
+    @property
+    def click(self):
+        self.hits +=1
+        self.save()
 
 # 방법공유
 class VocalNotice(models.Model):
@@ -72,4 +70,34 @@ class VocalNotice(models.Model):
     article_image = models.ImageField(upload_to='article/%Y/%m/%d/'+formatted_time, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # hits = models.PositiveIntegerField(default=0)
+    hits = models.PositiveIntegerField(default=0)
+
+    @property
+    def click(self):
+        self.hits +=1
+        self.save()
+
+        
+class HitsCount(models.Model):
+    ip = models.CharField(max_length=30)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    expire_date = models.DateTimeField(default=timezone.now)
+
+    def __unicode__(self):
+        return self.ip
+    
+class VocalHitsCount(models.Model):
+    ip = models.CharField(max_length=30)
+    article = models.ForeignKey(VocalArticle, on_delete=models.CASCADE)
+    expire_date = models.DateTimeField(default=timezone.now)
+
+    def __unicode__(self):
+        return self.ip
+    
+class NoticeHitsCount(models.Model):
+    ip = models.CharField(max_length=30)
+    article = models.ForeignKey(VocalNotice, on_delete=models.CASCADE)
+    expire_date = models.DateTimeField(default=timezone.now)
+
+    def __unicode__(self):
+        return self.ip

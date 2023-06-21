@@ -40,8 +40,8 @@ class VocalArticleSerializer(serializers.ModelSerializer):
 class VocalArticleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = VocalArticle
-        fields = ('voice', 'song_info')
-        #song
+        fields = ('voice', 'song_info', 'song')
+        
 
 
 class VocalNoticeSerializer(serializers.ModelSerializer):
@@ -58,5 +58,4 @@ class VocalNoticeSerializer(serializers.ModelSerializer):
 class VocalNoticeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = VocalNotice
-        fields = ('title', 'content')
-        # , 'article_image'
+        fields = ('title', 'content', 'article_image')
