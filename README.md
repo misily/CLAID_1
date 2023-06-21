@@ -4,23 +4,11 @@
 
 # 프로젝트 정보
 - Back-End
-    - Python 3.10.6 > pyenv에서 찾지 못해 3.10.5를 설치
-    ```python
-    [tool.poetry.dependencies]
-    python = "3.10.5"
-    djangorestframework-simplejwt = "5.2.2"
-    django = "4.2.1"
-    djangorestframework = "3.14.0"
-    django-cors-headers = "4.0.0"
-    mysqlclient = "2.1.1"
-    numpy = "1.24.3"
-    pillow = "9.5.0"
-    sqlparse = "0.4.4"
-    django-cleanup = "7.0.0"
-    django-dotenv = "^1.4.2"
-    requests = "^2.31.0"
+    - Python 3.10.6
     ```
-    - poetry
+        pip install -r requirements.txt
+    ```
+    ~~poetry의존성패키지오류로 인해 폐기~~
     - pyenv
 - Front-End
     - HTML
@@ -29,17 +17,18 @@
     - JQuery
     - ajax
     - Fetch API
-    - WebGPU
-    - WebGL
+    ~~WebGPU~~  (not yet)
+    ~~WebGL~~   (not yet)
     - Web Audio API
 - Deployment
-    - Docker
-    - AWS EC2
-    - AWS Route53
-    - RDS
-    - Nginx
+    ~~Docker~~  (not yet)
+    ~~AWS EC2~~ (not yet)
+    ~~AWS Route53~~ (not yet)
+    ~~RDS~~ (not yet)
+    ~~Nginx~~   (not yet)
 - Database
-    - MySQL
+    -sqlite3 (for development)
+    ~~MySQL~~   (not yet)
 
 # Docs Convention
 class KakaoLoginView:
