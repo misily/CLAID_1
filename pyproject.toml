@@ -6,7 +6,7 @@ authors = ["Lee Juneyoung <wnsdud318@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.10.5"
+python = "3.10.6"
 djangorestframework-simplejwt = "5.2.2"
 django = "4.2.1"
 djangorestframework = "3.14.0"
