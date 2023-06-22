@@ -7,8 +7,8 @@ class Article(models.Model):
     current_time = datetime.now()
     formatted_time = current_time.strftime("%H-%M-%S")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
-    content = models.TextField()
+    voice = models.CharField(max_length=100)
+    song_info = models.CharField(max_length=100) #원곡정보
     article_image = models.ImageField(upload_to='article/%Y/%m/%d/'+formatted_time, null=True, blank=True)
     song = models.FileField(upload_to='songs/%Y/%m/%d/'+formatted_time)
     good = models.ManyToManyField(User, related_name='good_article',blank=True)
@@ -41,25 +41,6 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-    
-# 보컬로이드 자랑
-class VocalArticle(models.Model):
-    current_time = datetime.now()
-    formatted_time = current_time.strftime("%H-%M-%S")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    voice = models.CharField(max_length=100)
-    song_info = models.CharField(max_length=100) #원곡정보
-    song = models.FileField(upload_to='songs/%Y/%m/%d/'+formatted_time)
-    good = models.ManyToManyField(User, related_name='good_vocal',blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    hits = models.PositiveIntegerField(default=0)
-
-    @property
-    def click(self):
-        self.hits +=1
-        self.save()
-
 # 방법공유
 class VocalNotice(models.Model):
     current_time = datetime.now()
@@ -85,15 +66,7 @@ class HitsCount(models.Model):
 
     def __unicode__(self):
         return self.ip
-    
-class VocalHitsCount(models.Model):
-    ip = models.CharField(max_length=30)
-    article = models.ForeignKey(VocalArticle, on_delete=models.CASCADE)
-    expire_date = models.DateTimeField(default=timezone.now)
 
-    def __unicode__(self):
-        return self.ip
-    
 class NoticeHitsCount(models.Model):
     ip = models.CharField(max_length=30)
     article = models.ForeignKey(VocalNotice, on_delete=models.CASCADE)
