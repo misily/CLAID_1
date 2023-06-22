@@ -179,6 +179,7 @@ class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     업데이트 일자 : 2023.06.09
     '''  
     queryset = Comment.objects.all()
+    serializer_class = CommentCreateSerializer
 
 
 
@@ -349,4 +350,5 @@ class NoticeCommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     업데이트 일자 : 2023.06.09
     '''  
     queryset = NoticeComment.objects.all()
+    serializer_class = NoticeCommentCreateSerializer
 
