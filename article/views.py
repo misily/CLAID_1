@@ -17,7 +17,7 @@ from article.models import Article, VocalArticle, VocalNotice, HitsCount, get_cl
 from user.models import User
 from datetime import datetime, timedelta
 from django.utils import timezone
-from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalArticleSerializer, VocalArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer, CommentUserSerializer, UserIdSerializer
+from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalArticleSerializer, VocalArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer, CommentUserSerializer, UserIdSerializer, CommentCreateSerializer
 from rest_framework import status
 from pathlib import Path
 
@@ -177,6 +177,16 @@ class CommentView(generics.ListCreateAPIView):
                 'good': serialzier.data
             })
         return Response(comment_data)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = CommentCreateSerializer(data=request.data)
+        lookup_url_kwarg = 'article_id'
+        article_id = self.kwargs.get(lookup_url_kwarg)
+        article = Article.objects.get(id=article_id)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user, article=article)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
@@ -187,7 +197,9 @@ class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     업데이트 일자 : 2023.06.09
     '''  
     queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+
+
+
 
 class ArticleGoodView(APIView):
     def post(self,request,article_id):

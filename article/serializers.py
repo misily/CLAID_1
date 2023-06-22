@@ -87,3 +87,10 @@ class UserIdSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id']
+
+
+class CommentCreateSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+            model = Comment
+            fields= ("content",)
