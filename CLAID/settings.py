@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'article',
     'user.apps.UserConfig',
+    'separator',
     'django.contrib.sites',
 ]
 

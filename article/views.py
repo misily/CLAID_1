@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import mixins
 
-from article.models import Comment
+from article.models import Comment, VocalHitsCount, NoticeHitsCount
 from article.serializers import CommentSerializer
 
 from rest_framework import status
@@ -266,8 +266,16 @@ class VocalArticleDetailView(APIView):
     def get(self, request, article_id):
         article = get_object_or_404(VocalArticle, id = article_id)
         serializer = VocalArticleSerializer(article)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        ip = get_client_ip(request)
+        expire_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)  # 다음 날 자정을 만료 날짜로 설정
+        cnt = VocalHitsCount.objects.filter(ip=ip, article=article, expire_date__gt=timezone.now()).count() # 만료 기간 >= 현재시간, 즉 아직 만료 되지 않은 경우를 count
+        if cnt == 0:  #만료가 됐다 = article_hitscount 테이블에 없는 경우
+            article.click
+            hc = VocalHitsCount(ip=ip, article=article, expire_date=expire_date)
+            hc.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_200_OK)
     '''       
     작성자 : 공민영, 왕규원
     내용 : 보컬로이드 자랑 게시글 수정하기
@@ -348,8 +356,16 @@ class VocalNoticeDetailView(APIView):
     def get(self, request, article_id):
         article = get_object_or_404(VocalNotice, id = article_id)
         serializer = VocalNoticeSerializer(article)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        ip = get_client_ip(request)
+        expire_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)  # 다음 날 자정을 만료 날짜로 설정
+        cnt = NoticeHitsCount.objects.filter(ip=ip, article=article, expire_date__gt=timezone.now()).count() # 만료 기간 >= 현재시간, 즉 아직 만료 되지 않은 경우를 count
+        if cnt == 0:  #만료가 됐다 = article_hitscount 테이블에 없는 경우
+            article.click
+            hc = NoticeHitsCount(ip=ip, article=article, expire_date=expire_date)
+            hc.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_200_OK)
     '''       
     작성자 : 공민영, 왕규원
     내용 : 보컬로이드 방법공유 게시글 수정하기
