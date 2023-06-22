@@ -41,6 +41,17 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+class HitsCount(models.Model):
+    ip = models.CharField(max_length=30)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    expire_date = models.DateTimeField(default=timezone.now)
+
+    def __unicode__(self):
+        return self.ip
+
+
+
+
 # 방법공유
 class VocalNotice(models.Model):
     current_time = datetime.now()
@@ -58,14 +69,14 @@ class VocalNotice(models.Model):
         self.hits +=1
         self.save()
 
+class NoticeComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(VocalNotice, on_delete=models.CASCADE,related_name='notice_comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    good = models.ManyToManyField(User, related_name='notice_good_comment',blank=True)
         
-class HitsCount(models.Model):
-    ip = models.CharField(max_length=30)
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    expire_date = models.DateTimeField(default=timezone.now)
-
-    def __unicode__(self):
-        return self.ip
 
 class NoticeHitsCount(models.Model):
     ip = models.CharField(max_length=30)

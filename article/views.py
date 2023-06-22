@@ -5,7 +5,6 @@ from rest_framework import generics
 from rest_framework import mixins
 
 from article.models import Comment, NoticeHitsCount
-from article.serializers import CommentSerializer
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -13,10 +12,12 @@ from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from article.models import Article, VocalNotice, HitsCount, get_client_ip
+from article.models import Article, VocalNotice, HitsCount, get_client_ip,NoticeComment
+from user.models import User
 from datetime import datetime, timedelta
 from django.utils import timezone
 from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer
+from article.serializers import CommentUserSerializer, UserIdSerializer,CommentSerializer, CommentCreateSerializer, NoticeCommentSerializer, NoticeCommentCreateSerializer
 from rest_framework import status
 from pathlib import Path
 
@@ -132,12 +133,42 @@ class CommentView(generics.ListCreateAPIView):
     작성자 :김은수
     내용 : 댓글의 생성과 조회가 가능함
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.09
+    업데이트 일자 : 2023.06.21
     '''
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+    def get_queryset(self):
+        article_id = self.kwargs['article_id']
+        return Comment.objects.filter(article_id=article_id)
+
+    def get(self, request, *args, **kwargs):
+        article_id = self.kwargs['article_id']
+        comments = Comment.objects.filter(article_id=article_id)
+        comment_data = []
+        
+        for comment in comments:
+            user = User.objects.get(id=comment.user_id)
+            comment_good = comment.good.all()
+            user_data = CommentUserSerializer(user).data
+            serialzier = UserIdSerializer(comment_good, many=True)
+            comment_data.append({
+                'content':comment.content,
+                'user': user_data,
+                'good': serialzier.data
+            })
+        return Response(comment_data)
     
+    def post(self, request, *args, **kwargs):
+        serializer = CommentCreateSerializer(data=request.data)
+        lookup_url_kwarg = 'article_id'
+        article_id = self.kwargs.get(lookup_url_kwarg)
+        article = Article.objects.get(id=article_id)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user, article=article)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
@@ -148,7 +179,10 @@ class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     업데이트 일자 : 2023.06.09
     '''  
     queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+    serializer_class = CommentCreateSerializer
+
+
+
 
 class ArticleGoodView(APIView):
     def post(self,request,article_id):
@@ -261,3 +295,60 @@ class VocalNoticeDetailView(APIView):
                 # 본인의 게시글이 아니라면
             else:
                 return Response({'message':'본인 게시글만 삭제 가능합니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+
+#NoticeComment view
+class NoticeCommentView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
+    '''
+    작성자 :김은수
+    내용 : 댓글의 생성과 조회가 가능함
+    최초 작성일 : 2023.06.08
+    업데이트 일자 : 2023.06.21
+    '''
+    queryset = NoticeComment.objects.all()
+    serializer_class = NoticeCommentSerializer
+
+    def get_queryset(self):
+        article_id = self.kwargs['article_id']
+        return NoticeComment.objects.filter(article_id=article_id)
+
+    def get(self, request, *args, **kwargs):
+        article_id = self.kwargs['article_id']
+        comments = NoticeComment.objects.filter(article_id=article_id)
+        comment_data = []
+        
+        for comment in comments:
+            user = User.objects.get(id=comment.user_id)
+            comment_good = comment.good.all()
+            user_data = CommentUserSerializer(user).data
+            serialzier = UserIdSerializer(comment_good, many=True)
+            comment_data.append({
+                'content':comment.content,
+                'user': user_data,
+                'good': serialzier.data
+            })
+        return Response(comment_data)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = NoticeCommentCreateSerializer(data=request.data)
+        lookup_url_kwarg = 'article_id'
+        article_id = self.kwargs.get(lookup_url_kwarg)
+        article = VocalNotice.objects.get(id=article_id)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user, article=article)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class NoticeCommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny]
+    '''
+    작성자 :김은수
+    내용 : 댓글의 수정과 삭제가 가능함
+    최초 작성일 : 2023.06.07
+    업데이트 일자 : 2023.06.09
+    '''  
+    queryset = NoticeComment.objects.all()
+    serializer_class = NoticeCommentCreateSerializer
+
