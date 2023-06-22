@@ -14,9 +14,10 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from article.models import Article, VocalArticle, VocalNotice, HitsCount, get_client_ip
+from user.models import User
 from datetime import datetime, timedelta
 from django.utils import timezone
-from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalArticleSerializer, VocalArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer
+from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalArticleSerializer, VocalArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer, CommentUserSerializer, UserIdSerializer
 from rest_framework import status
 from pathlib import Path
 
@@ -151,12 +152,31 @@ class CommentView(generics.ListCreateAPIView):
     작성자 :김은수
     내용 : 댓글의 생성과 조회가 가능함
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.09
+    업데이트 일자 : 2023.06.21
     '''
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
-    
+    def get_queryset(self):
+        article_id = self.kwargs['article_id']
+        return Comment.objects.filter(article_id=article_id)
+
+    def get(self, request, *args, **kwargs):
+        article_id = self.kwargs['article_id']
+        comments = Comment.objects.filter(article_id=article_id)
+        comment_data = []
+        
+        for comment in comments:
+            user = User.objects.get(id=comment.user_id)
+            comment_good = comment.good.all()
+            user_data = CommentUserSerializer(user).data
+            serialzier = UserIdSerializer(comment_good, many=True)
+            comment_data.append({
+                'content':comment.content,
+                'user': user_data,
+                'good': serialzier.data
+            })
+        return Response(comment_data)
 
 class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
