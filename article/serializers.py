@@ -1,7 +1,7 @@
 from django.db import models
 from rest_framework import serializers
 from article.models import Article
-from article.models import Comment
+from article.models import Comment, NoticeComment
 from article.models import VocalNotice
 from user.models import User
 
@@ -73,4 +73,28 @@ class CommentCreateSerializer(serializers.ModelSerializer):
    
     class Meta:
             model = Comment
+            fields= ("content",)
+
+
+#NoticeArticleComment
+
+class NoticeCommentSerializer(serializers.ModelSerializer):
+    user = CommentUserSerializer()
+    good = serializers.SerializerMethodField()
+
+    def get_good(self, comment):
+        good_users = comment.good.all()
+        good_user_data = CommentUserSerializer(good_users, many=True)
+        return good_user_data
+    
+    class Meta:
+        model = NoticeComment
+        fields = ['content', 'user', 'good']
+
+
+
+class NoticeCommentCreateSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+            model = NoticeComment
             fields= ("content",)
