@@ -45,7 +45,7 @@ class VocalNoticeCreateSerializer(serializers.ModelSerializer):
 class CommentUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'nickname', 'profile_image']
+        fields = ['id','email', 'nickname', 'profile_image']
 
 
 
