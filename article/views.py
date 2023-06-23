@@ -153,6 +153,7 @@ class CommentView(generics.ListCreateAPIView):
             user_data = CommentUserSerializer(user).data
             serialzier = UserIdSerializer(comment_good, many=True)
             comment_data.append({
+                'id': comment.id,
                 'content':comment.content,
                 'user': user_data,
                 'good': serialzier.data
@@ -324,6 +325,7 @@ class NoticeCommentView(generics.ListCreateAPIView):
             user_data = CommentUserSerializer(user).data
             serialzier = UserIdSerializer(comment_good, many=True)
             comment_data.append({
+                'id': comment.id,
                 'content':comment.content,
                 'user': user_data,
                 'good': serialzier.data
