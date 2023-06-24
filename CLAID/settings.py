@@ -26,7 +26,7 @@ SOCIAL_OUTH_CONFIG = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -139,16 +139,24 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'production': {
-        'NAME': 'user_data',
-        'ENGINE': 'django.db.backends.mysql',
-        'USER': os.environ.get('USER'),
-        'PASSWORD' : os.environ.get('PASSWORD'),
-        'PORT': os.environ.get('PORT')
+    'deploy' : {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'db',
+        'PORT': '5432',
     },
+    # 'production': {
+    #     'NAME': 'user_data',
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'USER': os.environ.get('USER'),
+    #     'PASSWORD' : os.environ.get('PASSWORD'),
+    #     'PORT': os.environ.get('PORT')
+    # },
 }
 
-DATABASES['default'] = DATABASES['dev' if DEBUG else 'production']
+DATABASES['default'] = DATABASES['dev' if DEBUG else 'deploy']
 
 
 # Password validation
