@@ -26,7 +26,7 @@ SOCIAL_OUTH_CONFIG = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', default=False))
 
 ALLOWED_HOSTS = []
 
@@ -141,11 +141,11 @@ DATABASES = {
     },
     'deploy' : {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': 'db',
-        'PORT': '5432',
+        'NAME': os.environ.get('DEPLOY_NAME'),
+        'USER': os.environ.get('DEPLOY_USER'),
+        'PASSWORD': os.environ.get('DEPLOY_PASSWORD'),
+        'HOST': os.environ.get('DEPLOY_HOST'),
+        'PORT': os.environ.get('DEPLOY_PORT'),
     },
     # 'production': {
     #     'NAME': 'user_data',
