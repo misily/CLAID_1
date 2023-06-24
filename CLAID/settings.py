@@ -139,6 +139,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
+    'deploy' : {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'db',
+        'PORT': '5432',
+    },
     'production': {
         'NAME': 'user_data',
         'ENGINE': 'django.db.backends.mysql',
