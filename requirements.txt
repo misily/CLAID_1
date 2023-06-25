@@ -85,3 +85,4 @@ tzdata==2023.3
 urllib3==1.26.16
 Werkzeug==2.3.6
 wrapt==1.14.1
+psycopg==2-2.9.6
