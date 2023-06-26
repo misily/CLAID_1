@@ -5,8 +5,8 @@ from rest_framework import generics
 from rest_framework import mixins
 
 from article.models import Comment, NoticeHitsCount
+from django.db.models import Q
 
-from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -18,7 +18,6 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer
 from article.serializers import CommentUserSerializer, UserIdSerializer,CommentSerializer, CommentCreateSerializer, NoticeCommentSerializer, NoticeCommentCreateSerializer
-from rest_framework import status
 from pathlib import Path
 
 import django
@@ -354,3 +353,19 @@ class NoticeCommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
     queryset = NoticeComment.objects.all()
     serializer_class = NoticeCommentCreateSerializer
 
+class ArticleSearchView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    '''
+    작성자 : 마동휘
+    내용 : 게시글 검색
+    최초 작성일 : 2023.06.22
+    업데이트 일자 : 2023.06.23
+    '''  
+    def get(self, request):
+        query = request.GET.get('q')
+        if query:
+            articles = Article.objects.filter(Q(song_info__contains=query) | Q(comments__content__contains=query) | Q(voice__contains=query)).order_by('-created_at')
+            serializer = ArticleSerializer(articles, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': '검색어를 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
