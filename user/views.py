@@ -136,7 +136,7 @@ class KakaoCallBackView(APIView):
         expires_in = token_response.json().get('expires_in')
         refresh_token = token_response.json().get('refresh_token')
         refresh_token_expires_in = token_response.json().get('refresh_token_expires_in')
-        
+        print("1")
         '''
         작성자 : 이준영
         내용 : 카카오 Token으로 사용자 정보를 받고,
@@ -152,7 +152,7 @@ class KakaoCallBackView(APIView):
                     # "Access-Control-Allow-Origin": "http://127.0.0.1:5500/kakao.html",
             },
         )
-        
+        print("2")
         user_data = user_data.json()
 
         email = user_data.get("kakao_account").get("email")
@@ -171,7 +171,7 @@ class KakaoCallBackView(APIView):
             "refresh_token" : refresh_token,
             "refresh_token_expires_in" : refresh_token_expires_in,
         }
-        
+
         try:
             kakao_user, created = User.objects.get_or_create(email=email, defaults=kakao_data)
             if created:
@@ -186,8 +186,8 @@ class KakaoCallBackView(APIView):
                 else:
                     return Response({"message": {serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"message": "DB 저장 오류입니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+            return Response({"message": e+"DB 저장 오류입니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         '''
         작성자 : 이준영
         내용 : 사용자 정보로 JWT Token을 만들어 커스텀해서 보내줌.
@@ -355,7 +355,7 @@ class GoogleLogin(APIView):
             "profile_image": user_data.get("picture"),
             "email": user_data.get("email"),
             "nickname": user_data.get("name"),
-            # "login_type": "google",
+            "login_type": "google",
         }
         
         email=user_data.get("email")
