@@ -25,9 +25,6 @@ SOCIAL_OUTH_CONFIG = {
     'GOOGLE_API_KEY': os.environ.get('GOOGLE_API_KEY')
 }
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('DJANGO_DEBUG', default=False))
-
 ALLOWED_HOSTS = ['*']
 
 
@@ -131,6 +128,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'CLAID.wsgi.application'
 
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', default=False))
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -140,24 +140,19 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     },
     'deploy' : {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DEPLOY_NAME'),
         'USER': os.environ.get('DEPLOY_USER'),
         'PASSWORD': os.environ.get('DEPLOY_PASSWORD'),
         'HOST': os.environ.get('DEPLOY_HOST'),
         'PORT': os.environ.get('DEPLOY_PORT'),
     },
-    # 'production': {
-    #     'NAME': 'user_data',
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'USER': os.environ.get('USER'),
-    #     'PASSWORD' : os.environ.get('PASSWORD'),
-    #     'PORT': os.environ.get('PORT')
-    # },
 }
 
-DATABASES['default'] = DATABASES['dev' if DEBUG else 'deploy']
+current_env = os.environ.get('DJANGO_ENVIRONMENT', 'dev')
+DATABASES['default'] = DATABASES[current_env]
 
+# DATABASES['default'] = DATABASES['dev' if DEBUG else 'deploy']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -198,7 +193,7 @@ STATIC_URL = 'static/'
 
 # Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+MEDIA_URL = "media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
