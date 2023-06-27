@@ -136,7 +136,7 @@ class KakaoCallBackView(APIView):
         expires_in = token_response.json().get('expires_in')
         refresh_token = token_response.json().get('refresh_token')
         refresh_token_expires_in = token_response.json().get('refresh_token_expires_in')
-        print("1")
+
         '''
         작성자 : 이준영
         내용 : 카카오 Token으로 사용자 정보를 받고,
@@ -152,7 +152,7 @@ class KakaoCallBackView(APIView):
                     # "Access-Control-Allow-Origin": "http://127.0.0.1:5500/kakao.html",
             },
         )
-        print("2")
+
         user_data = user_data.json()
 
         email = user_data.get("kakao_account").get("email")
