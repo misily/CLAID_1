@@ -16,7 +16,7 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     #Tags = models.ManytoManyField(Tag, related_name='articles',blank=True)
     #Genre = models.ManytoManyField(Genre, related_name='articles',blank=True)
-    hits = models.PositiveIntegerField(default=0)
+    hits = models.BigIntegerField(default=0)
 
     @property
     def click(self):
@@ -62,7 +62,7 @@ class VocalNotice(models.Model):
     article_image = models.ImageField(upload_to='article/%Y/%m/%d/'+formatted_time, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    hits = models.PositiveIntegerField(default=0)
+    hits = models.BigIntegerField(default=0)
 
     @property
     def click(self):
