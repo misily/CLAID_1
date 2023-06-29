@@ -6,6 +6,7 @@ app_name = 'user'
 
 urlpatterns = [
     path("signup/", views.UserSignupView.as_view(), name="signup"),
+    path("user/", views.UserView.as_view(), name="user_view"),
     path("activate/<str:uidb64>/<str:token>/", views.UserActivate.as_view(), name="activate"),
 
     path("login/", views.CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
@@ -15,8 +16,8 @@ urlpatterns = [
     path('google/', views.GoogleLogin.as_view(), name='googlelogin'),
     path('google/callback/', views.GoogleLogin.as_view(), name='googlelogin'),
 
-    path('kakao/login/callback/', views.KakaoCallBackView.as_view()),
-    path('kakao/<int:sns_id>/', views.KakaoUserView.as_view()),    
+    path('kakao/login/callback/', views.KakaoCallBackView.as_view(), name='kakaocallback'),
+    path('kakao/<int:sns_id>/', views.KakaoUserView.as_view(), name='kakaologin'),    
     path('kakao/unlink/', views.KakaoUnLinkView.as_view()),    
     path('kakao/logout/', views.KakaoLogoutView.as_view()),
     path('follow/<int:user_id>/', views.FollowView.as_view(), name='follow_view'),

@@ -2,6 +2,7 @@ from django.db import models
 from user.models import User
 from django.utils import timezone
 from datetime import datetime
+from django.urls import reverse
 
 class Article(models.Model):
     current_time = datetime.now()
@@ -18,10 +19,13 @@ class Article(models.Model):
     #Genre = models.ManytoManyField(Genre, related_name='articles',blank=True)
     hits = models.PositiveIntegerField(default=0)
 
+    def get_absolute_article_url(self):
+        return reverse('article_detail_view', kwargs={"article_id":self.pk})
     @property
     def click(self):
         self.hits +=1
         self.save()
+        
 
 
 class Comment(models.Model):
@@ -63,6 +67,9 @@ class VocalNotice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     hits = models.PositiveIntegerField(default=0)
+
+    def get_absolute_notice_url(self):
+        return reverse('vocal_notice_detail_view', kwargs={"article_id":self.pk})
 
     @property
     def click(self):

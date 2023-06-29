@@ -24,6 +24,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 from rest_framework_simplejwt.authentication import JWTAuthentication, TokenError, InvalidToken
 from rest_framework.generics import get_object_or_404
 
+import asyncio
+
 GOOGLE_API_KEY = SOCIAL_OUTH_CONFIG['GOOGLE_API_KEY']
 
 '''
@@ -45,13 +47,28 @@ class UserSignupView(APIView):
     최초 작성일 : 2023.06.08
     업데이트 일자 : 2023.06.08
     '''
-    def post(self, request):
+    async def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            # serializer.save()
+            user = await serializer.create(serializer.validated_data)  # 비동기로 create 메서드 호출
             return Response({"message": "인증메일을 발송했습니다."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class UserView(APIView):
+    '''
+    작성자 : 공민영
+    내용 : 내 정보보기
+    최초 작성일 : 2023.06.29
+    업데이트 일자 : 2023.06.29
+    '''
+    permission_classes=[permissions.IsAuthenticated]
+    def get(self,request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
