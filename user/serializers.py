@@ -13,7 +13,7 @@ from article.serializers import ArticleSerializer
 from user.tokens import account_activation_token
 import os
 
-
+from threading import Thread
     
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -52,26 +52,27 @@ class UserSerializer(serializers.ModelSerializer):
     # 내용 : 회원가입
     # 최초 작성일 : 2023.06.08
     # 업데이트 일자 : 2023.06.08
-    async def send_verification_email(self, user):
+
+    def send_email(self, user):
         message = (
                 "안녕하세요, {nickname}님!\n\n"
                 "회원가입 인증을 완료하려면 다음 링크를 클릭해주세요:\n"
                 "http://{domain}/user/activate/{uid}/{token}\n\n"
                 "---\n"
                 "감사합니다!"
-        ).format(
-            nickname=user.nickname,
-            domain= os.environ.get("domain"),
-            uid=urlsafe_base64_encode(force_bytes(user.pk)),
-            token=account_activation_token.make_token(user),
-        )
+                ).format(
+                    nickname=user.nickname,
+                    domain= os.environ.get("domain"),
+                    uid=urlsafe_base64_encode(force_bytes(user.pk)),
+                    token=account_activation_token.make_token(user),
+                )
 
         subject = "회원가입 인증 메일입니다."
         to = [user.email]
         from_email = settings.DEFAULT_FROM_EMAIL
         EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
 
-    async def create(self, validated_data):
+    def create(self, validated_data):
         user = super().create(validated_data)
         user.is_active = False
         password = user.password
@@ -79,8 +80,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-       
-        await self.send_verification_email(user)  # 비동기 작업 시작
+        # 이메일 발송 작업을 새로운 스레드에서 실행
+        email_thread = Thread(target=self.send_email, args=(user,))
+        email_thread.start()
+        
         return user
 
     

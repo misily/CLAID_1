@@ -47,11 +47,10 @@ class UserSignupView(APIView):
     최초 작성일 : 2023.06.08
     업데이트 일자 : 2023.06.08
     '''
-    async def post(self, request):
+    def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            # serializer.save()
-            user = await serializer.create(serializer.validated_data)  # 비동기로 create 메서드 호출
+            serializer.save()
             return Response({"message": "인증메일을 발송했습니다."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
