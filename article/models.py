@@ -17,7 +17,7 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     #Tags = models.ManytoManyField(Tag, related_name='articles',blank=True)
     #Genre = models.ManytoManyField(Genre, related_name='articles',blank=True)
-    hits = models.PositiveIntegerField(default=0)
+    hits = models.BigIntegerField(default=0)
 
     def get_absolute_article_url(self):
         return reverse('article_detail_view', kwargs={"article_id":self.pk})
@@ -66,7 +66,7 @@ class VocalNotice(models.Model):
     article_image = models.ImageField(upload_to='article/%Y/%m/%d/'+formatted_time, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    hits = models.PositiveIntegerField(default=0)
+    hits = models.BigIntegerField(default=0)
 
     def get_absolute_notice_url(self):
         return reverse('vocal_notice_detail_view', kwargs={"article_id":self.pk})

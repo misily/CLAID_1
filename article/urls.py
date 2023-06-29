@@ -17,4 +17,5 @@ urlpatterns = [
 
     path('notice/<int:article_id>/commentcr/', views.NoticeCommentView.as_view(), name='NoticeComment'),
     path('notice/<int:article_id>/commentud/<int:pk>/', views.NoticeCommentViewByArticle.as_view(), name='NoticeCommentUD'),
+    path('search/', views.ArticleSearchView.as_view(), name='article_search_view'),
 ]
