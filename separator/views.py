@@ -5,6 +5,7 @@ from spleeter.separator import Separator
 from django.conf import settings
 import os
 
+domain = os.environ.get('domain')
 
 def handle_uploaded_file(f):
     file_name = f.name.replace(' ', '').replace('.mp3', '')
@@ -26,8 +27,8 @@ def separate_audio(file_name):
     accompaniment_path = os.path.join(output_path, f'{file_name}/accompaniment.wav')
     
     # 개발 서버 주소에 맞게 경로 수정
-    vocals_path = vocals_path.replace(settings.MEDIA_ROOT, 'http://127.0.0.1:8000/media').replace("\\", "/")
-    accompaniment_path = accompaniment_path.replace(settings.MEDIA_ROOT, 'http://127.0.0.1:8000/media').replace("\\", "/")
+    vocals_path = vocals_path.replace(settings.MEDIA_ROOT, 'http://'+domain+'/media').replace("\\", "/")
+    accompaniment_path = accompaniment_path.replace(settings.MEDIA_ROOT, 'http://'+domain+'/media').replace("\\", "/")
     
     return {
         'vocals': vocals_path,

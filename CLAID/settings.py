@@ -25,8 +25,6 @@ SOCIAL_OUTH_CONFIG = {
     'GOOGLE_API_KEY': os.environ.get('GOOGLE_API_KEY')
 }
 
-ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -54,7 +52,6 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # corsheaders
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -62,20 +59,33 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:5500',
-]
+ALLOWED_HOSTS = ['*']
 
 # CORS
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = [
+    'https://claid.kr',
+    'https://cdn.claid.kr',
+    'http://127.0.0.1:5500',
+    'http://3.34.188.200:8000',
+]
+
+CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
+
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    "https://claid.kr",
+    "https://cdn.claid.kr",
+    'http://127.0.0.1:5500',
+    'http://3.34.188.200:8000',
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (
     "DELETE",
     "GET",
-    # 'OPTIONS',
-    'PATCH',
+    "OPTIONS",
+    "PATCH",
     "POST",
     "PUT",
 )
@@ -129,7 +139,7 @@ WSGI_APPLICATION = 'CLAID.wsgi.application'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('DJANGO_DEBUG', default=False))
+DEBUG = os.environ.get('DJANGO_DEBUG', default=False)
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
