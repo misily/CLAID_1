@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from article.models import Article, VocalNotice, HitsCount, get_client_ip,NoticeComment
 from user.models import User
 from datetime import datetime, timedelta
@@ -127,7 +127,8 @@ class ArticleDetailView(APIView):
 
 
 class CommentView(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     '''
     작성자 :김은수
     내용 : 댓글의 생성과 조회가 가능함
@@ -171,7 +172,8 @@ class CommentView(generics.ListCreateAPIView):
 
 
 class CommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     '''
     작성자 :김은수
     내용 : 댓글의 수정과 삭제가 가능함
@@ -299,7 +301,8 @@ class VocalNoticeDetailView(APIView):
 
 #NoticeComment view
 class NoticeCommentView(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     '''
     작성자 :김은수
     내용 : 댓글의 생성과 조회가 가능함
@@ -343,7 +346,8 @@ class NoticeCommentView(generics.ListCreateAPIView):
 
 
 class NoticeCommentViewByArticle(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     '''
     작성자 :김은수
     내용 : 댓글의 수정과 삭제가 가능함

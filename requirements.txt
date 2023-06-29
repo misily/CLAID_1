@@ -16,6 +16,7 @@ django-dotenv==1.4.2
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 exceptiongroup==1.1.1
+Faker==18.11.2
 ffmpeg-python==0.2.0
 flatbuffers==23.5.26
 future==0.18.3
