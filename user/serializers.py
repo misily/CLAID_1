@@ -52,21 +52,13 @@ class UserSerializer(serializers.ModelSerializer):
     # 내용 : 회원가입
     # 최초 작성일 : 2023.06.08
     # 업데이트 일자 : 2023.06.08
-
-    def create(self, validated_data):
-        user = super().create(validated_data)
-        user.is_active = False
-        password = user.password
-        # 비밀번호 암호화
-        user.set_password(password)
-        user.save()
-
+    async def send_verification_email(self, user):
         message = (
-        "안녕하세요, {nickname}님!\n\n"
-        "회원가입 인증을 완료하려면 다음 링크를 클릭해주세요:\n"
-        "http://{domain}/user/activate/{uid}/{token}\n\n"
-        "---\n"
-        "감사합니다!"
+                "안녕하세요, {nickname}님!\n\n"
+                "회원가입 인증을 완료하려면 다음 링크를 클릭해주세요:\n"
+                "http://{domain}/user/activate/{uid}/{token}\n\n"
+                "---\n"
+                "감사합니다!"
         ).format(
             nickname=user.nickname,
             domain= os.environ.get("domain"),
@@ -78,6 +70,17 @@ class UserSerializer(serializers.ModelSerializer):
         to = [user.email]
         from_email = settings.DEFAULT_FROM_EMAIL
         EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
+
+    async def create(self, validated_data):
+        user = super().create(validated_data)
+        user.is_active = False
+        password = user.password
+        # 비밀번호 암호화
+        user.set_password(password)
+        user.save()
+
+       
+        await self.send_verification_email(user)  # 비동기 작업 시작
         return user
 
     
