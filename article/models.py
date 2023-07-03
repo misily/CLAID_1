@@ -67,6 +67,7 @@ class VocalNotice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     hits = models.BigIntegerField(default=0)
+    good = models.ManyToManyField(User, related_name='good_Notice',blank=True)
 
     def get_absolute_notice_url(self):
         return reverse('vocal_notice_detail_view', kwargs={"article_id":self.pk})

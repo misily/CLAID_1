@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('notice/', views.VocalNoticeView.as_view(), name='vocal_notice_view'),
     path('notice/<int:article_id>/', views.VocalNoticeDetailView.as_view(), name='vocal_notice_detail_view'),
+    path('notice/<int:article_id>/good/', views.VocalNoticeGoodView.as_view(), name='vocal_notice_good_view'),
 
     path('notice/<int:article_id>/commentcr/', views.NoticeCommentView.as_view(), name='NoticeComment'),
     path('notice/<int:article_id>/commentud/<int:pk>/', views.NoticeCommentViewByArticle.as_view(), name='NoticeCommentUD'),
