@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'separator',
     'django.contrib.sites',
+    
+    'django_celery_results', # celery
 ]
 
 SITE_ID = 1
@@ -115,6 +117,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
         'rest_framework.permissions.AllowAny',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
 }
 
 ROOT_URLCONF = 'CLAID.urls'
