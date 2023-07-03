@@ -108,3 +108,19 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.nickname
+    
+class Point(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    points = models.PositiveIntegerField(default=1000)
+
+    def __str__(self):
+        return f'{self.user}: {self.points} points'
+    
+class PointHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    point_change = models.BigIntegerField() #포인트 변화
+    reason = models.CharField(max_length=255) #이유
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.nickname}: {self.point_change} ({self.reason})"

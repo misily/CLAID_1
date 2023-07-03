@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from article.models import Article, VocalNotice, HitsCount, get_client_ip,NoticeComment
-from user.models import User
+from user.models import User, Point, PointHistory
 from datetime import datetime, timedelta
 from django.utils import timezone
 from article.serializers import ArticleSerializer, ArticleCreateSerializer, VocalNoticeSerializer, VocalNoticeCreateSerializer
@@ -43,12 +43,22 @@ class ArticleView(APIView):
     작성자 : 공민영
     내용 : 게시글 작성하기
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.08
+    수정자 : 공민영
+    수정내용 : 게시글 작성할 때 마다 포인트 지급, 이력 저장
+    업데이트 일자 : 2023.07.02
     '''
     def post(self, request):
         serializer = ArticleCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
+
+            user = request.user
+            user_point = Point.objects.get(user=user)
+
+            user_point.points += 1000
+            PointHistory.objects.create(user=user, point_change=+1000, reason="게시글 작성")
+            user_point.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -112,13 +122,25 @@ class ArticleDetailView(APIView):
     작성자 : 공민영
     내용 : 게시글 삭제하기
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.08
+    수정자 : 공민영
+    수정내용 : 게시글을 작성한지 24시간이 지나기 전 삭제시 포인트 차감, 이력 저장
+    업데이트 일자 : 2023.07.02
     '''
     def delete(self, request, article_id):
             article = get_object_or_404(Article, id = article_id)
                 # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
                 article.delete()
+
+            user = request.user
+            one_day_passed = timezone.now() > (article.created_at + timedelta(days=1))
+
+            if not one_day_passed:
+                user_point = Point.objects.get(user=request.user)
+                user_point.points -= 1000
+                PointHistory.objects.create(user=user, point_change=-1000, reason="게시글 삭제")
+                user_point.save()
+                
                 return Response({'message':'게시글이 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
                 # 본인의 게시글이 아니라면
             else:
@@ -134,6 +156,9 @@ class CommentView(generics.ListCreateAPIView):
     내용 : 댓글의 생성과 조회가 가능함
     최초 작성일 : 2023.06.08
     업데이트 일자 : 2023.06.21
+    수정자 : 공민영
+    수정내용 : 댓글 작성할 때 마다 포인트 지급
+    업데이트 일자 : 2023.07.02
     '''
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -168,6 +193,14 @@ class CommentView(generics.ListCreateAPIView):
 
         if serializer.is_valid():
             serializer.save(user=request.user, article=article)
+
+            user = request.user
+            user_point = Point.objects.get(user=user)
+
+            user_point.points += 500
+            PointHistory.objects.create(user=user, point_change=+500, reason="댓글 작성")
+            user_point.save()
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -226,12 +259,22 @@ class VocalNoticeView(APIView):
     작성자 : 공민영, 왕규원
     내용 : 보컬로이드 방법공유 게시글 작성하기
     최초 작성일 : 2023.06.19
-    업데이트 일자 : 2023.06.19
+    수정자 : 공민영
+    수정내용 : 게시글 작성할 때 마다 포인트 지급, 이력 저장
+    업데이트 일자 : 2023.07.02
     '''
     def post(self, request):
         serializer = VocalNoticeCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
+
+            user = request.user
+            user_point = Point.objects.get(user=user)
+
+            user_point.points += 1000
+            PointHistory.objects.create(user=user, point_change=+1000, reason="게시글 작성")
+            user_point.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -266,7 +309,6 @@ class VocalNoticeDetailView(APIView):
     작성자 : 공민영, 왕규원
     내용 : 보컬로이드 방법공유 게시글 수정하기
     최초 작성일 : 2023.06.19
-    업데이트 일자 : 2023.06.19
     '''
     def patch(self, request, article_id):
             article = get_object_or_404(VocalNotice, id = article_id)
@@ -286,13 +328,25 @@ class VocalNoticeDetailView(APIView):
     작성자 : 공민영, 왕규원
     내용 : 보컬로이드 방법공유 게시글 삭제하기
     최초 작성일 : 2023.06.19
-    업데이트 일자 : 2023.06.19
+    수정자 : 공민영
+    수정내용 : 게시글을 작성한지 24시간이 지나기 전 삭제시 포인트 차감, 이력 저장
+    업데이트 일자 : 2023.07.02
     '''
     def delete(self, request, article_id):
             article = get_object_or_404(VocalNotice, id = article_id)
-                # 본인이 작성한 게시글이 맞다면
+            # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
                 article.delete()
+
+            user = request.user
+            one_day_passed = timezone.now() > (article.created_at + timedelta(days=1))
+
+            if not one_day_passed:
+                user_point = Point.objects.get(user=request.user)
+                user_point.points -= 1000
+                PointHistory.objects.create(user=user, point_change=-1000, reason="게시글 삭제")
+                user_point.save()
+
                 return Response({'message':'게시글이 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
                 # 본인의 게시글이 아니라면
             else:
@@ -342,6 +396,14 @@ class NoticeCommentView(generics.ListCreateAPIView):
 
         if serializer.is_valid():
             serializer.save(user=request.user, article=article)
+
+            user = request.user
+            user_point = Point.objects.get(user=user)
+
+            user_point.points += 500
+            PointHistory.objects.create(user=user, point_change=+500, reason="댓글 작성")
+            user_point.save()
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

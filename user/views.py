@@ -7,9 +7,9 @@ from django.utils.encoding import force_str
 from django.core.mail import send_mail
 from django.contrib import messages
 
-from user.models import User, Profile
+from user.models import User, Profile, Point, PointHistory
 from user.tokens import account_activation_token
-from user.serializers import UserSerializer, SNSUserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer, ProfileSerializer
+from user.serializers import UserSerializer, SNSUserSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer, ProfileSerializer, PointSerializer, PointHistorySerializer, SuperPointHistorySerializer
 
 from CLAID.settings import SOCIAL_OUTH_CONFIG
 
@@ -23,8 +23,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication, TokenError, InvalidToken
 from rest_framework.generics import get_object_or_404
-
-import asyncio
 
 GOOGLE_API_KEY = SOCIAL_OUTH_CONFIG['GOOGLE_API_KEY']
 
@@ -45,12 +43,12 @@ class UserSignupView(APIView):
     작성자 : 공민영
     내용 : 회원가입
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.08
     '''
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
             return Response({"message": "인증메일을 발송했습니다."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -86,7 +84,9 @@ class UserActivate(APIView):
     작성자 : 공민영
     내용 : 이메일 인증 링크 클릭시
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.08
+    수정자 : 공민영
+    수정내용 : 회원가입 후 이메일인증 성공 시 포인트 부여
+    업데이트 일자 : 2023.06.30
     '''
     def get(self, request, uidb64, token):
         try:
@@ -99,6 +99,7 @@ class UserActivate(APIView):
             if user is not None and account_activation_token.check_token(user, token):
                 user.is_active = True
                 user.save()
+
                 return HttpResponse("이메일 인증이 완료되었습니다. 로그인이 가능합니다!")
             else:
                 return Response({"message":"만료된 토큰"}, status=status.HTTP_408_REQUEST_TIMEOUT)
@@ -438,3 +439,86 @@ class ProfileAPIView(APIView):
         if isinstance(error, InvalidToken):
             return Response({"error": "유효하지 않은 액세스 토큰입니다."}, status=401)
         return Response({"error": "토큰 오류 발생"}, status=401)
+
+
+class PointListCreateView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    '''
+    작성자 : 공민영
+    내용 : 슈퍼계정일 경우에만 전체 포인트 list 가져오기
+    최초 작성일 : 2023.06.30
+    '''
+    def get(self, request):
+        if request.user.is_admin:
+            points = Point.objects.all().order_by('pk')
+            serializer = PointSerializer(points, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "관리자 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
+class PointDetailView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    '''
+    작성자 : 공민영
+    내용 : 로그인한 사용자의 포인트 조회
+    최초 작성일 : 2023.06.30
+    '''
+    def get(self, request, user_id):
+        if request.user.id != user_id:
+            return Response({"message": "로그인한 사용자의 포인트만 조회 가능합니다."}, status=status.HTTP_403_FORBIDDEN)
+        
+        points = get_object_or_404(Point, id = user_id)
+        serializer = PointSerializer(points)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    '''
+    작성자 : 공민영
+    내용 : 이미 있는 포인트 객체를 대상으로 슈퍼계정이 일반계정에게 포인트 지급, 차감
+    최초 작성일 : 2023.06.30
+    '''
+    def patch(self, request, user_id):
+        if not request.user.is_admin:
+            return Response({"message": "관리자 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+        
+        target_user = get_object_or_404(User, id=user_id)
+        points = get_object_or_404(Point, user=target_user)
+
+        amount = request.data.get('amount')
+        action = request.data.get('action')
+        reason = request.data.get('reason')
+
+        if action == "add":
+            points.points += amount
+        elif action == "subtract":
+            # points.points -= amount
+            if points.points < amount:
+                return Response({"error": "포인트가 부족합니다."}, status=status.HTTP_400_BAD_REQUEST)
+            points.points -= amount
+            amount = -amount # 차감일 경우 point_change에 음수로 저장
+        else:
+            return Response({"error": "지급이나 차감할 포인트를 입력하세요."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        points.save()
+
+        PointHistory.objects.create(user=target_user, point_change=amount, reason=reason)
+        serializer = PointSerializer(points, context={'request': request, 'reason': reason})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class PointHistoryView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    '''
+    작성자 : 공민영
+    내용 : 전체 포인트 히스토리 조회
+    최초 작성일 : 2023.07.02
+    '''
+    def get(self, request):
+        if request.user.is_admin:
+            # 슈퍼계정일 경우 전체 포인트 이력 조회
+            point_history = PointHistory.objects.order_by('-created_at')
+            serializer = SuperPointHistorySerializer(point_history, many=True)
+        else:
+            # 일반계정일 경우 자신의 포인트 이력 조회
+            point_history = PointHistory.objects.filter(user=request.user).order_by('-created_at')
+            serializer = PointHistorySerializer(point_history, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
