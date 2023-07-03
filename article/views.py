@@ -435,3 +435,13 @@ class ArticleSearchView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'message': '검색어를 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class VocalNoticeGoodView(APIView):
+    def post(self,request,article_id):
+        article = get_object_or_404(VocalNotice, id=article_id)
+        if request.user in article.good.all():
+            article.good.remove(request.user)
+            return Response("좋아요를 취소하였습니다.", status=status.HTTP_200_OK)
+        else:
+            article.good.add(request.user)
+            return Response("좋아요를 눌렀습니다.", status=status.HTTP_200_OK)
