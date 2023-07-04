@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
-from user.models import User, Profile
+from user.models import User, Profile, Point, PointHistory
 
 from article.models import Article
 from django.core.mail import EmailMessage
@@ -108,6 +108,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["nickname"] = user.nickname
         token["profile_image"] = str(user.profile_image)
         token["is_active"] = user.is_active
+        token["is_admin"] = user.is_admin
         return token
     
     def get_user(self, validated_data):
@@ -118,3 +119,43 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['nickname', 'profile_image']
+
+class PointSerializer(serializers.ModelSerializer):
+    '''
+    작성자 : 공민영
+    내용 : 포인트 지급, 차감
+    최초 작성일 : 2023.07.02
+    '''
+    user_email = serializers.SerializerMethodField()
+
+    def get_user_email(self, obj):
+        return obj.user.email
+    
+    class Meta:
+        model = Point
+        fields = ['user_email', 'user', 'points']
+
+class PointHistorySerializer(serializers.ModelSerializer):
+    '''
+    작성자 : 공민영
+    내용 : 일반계정 포인트 지급, 차감 관련된 히스토리
+    최초 작성일 : 2023.07.02
+    '''
+    class Meta:
+        model = PointHistory
+        fields = ['point_change', 'reason', 'created_at']
+
+class SuperPointHistorySerializer(serializers.ModelSerializer):
+    '''
+    작성자 : 공민영
+    내용 : 슈퍼계정 포인트 지급, 차감 관련된 히스토리
+    최초 작성일 : 2023.07.02
+    '''
+    user_email = serializers.SerializerMethodField()
+
+    def get_user_email(self, obj):
+        return obj.user.email
+    
+    class Meta:
+        model = PointHistory
+        fields = ['user_email', 'user', 'point_change', 'reason', 'created_at']
