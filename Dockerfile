@@ -20,9 +20,11 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 
 # slim 이미지에서 postgresql 패키지를 설치하기 위해 필요 명령어 추가 + ffmpeg
-RUN apt update && apt install libpq-dev gcc ffmpeg -y
+RUN apt update && apt install libpq-dev
+RUN apt update && apt install gcc
 
 # 프로젝트 실행에 필요한 패키지들을 설치합니다.
+RUN apt update && apt install ffmpeg -y
 RUN pip install tensorflow-cpu
 RUN pip install --no-deps spleeter
 RUN pip install --no-cache-dir -r requirements.txt
