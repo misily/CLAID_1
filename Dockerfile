@@ -13,15 +13,17 @@ RUN mkdir /app/
 # /app/ 경로를 작업 디렉토리로 설정합니다.
 WORKDIR /app/
 
+# pip를 최신 버전으로 업그레이드합니다.
+RUN pip install --upgrade pip
+
 # requirments.txt를 작업 디렉토리(/app/) 경로로 복사합니다.
 COPY ./requirements.txt .
 
-# slim 이미지에서 postgresql 패키지를 설치하기 위해 필요 명령어 추가
-RUN apt update && apt install libpq-dev gcc -y
-
+# slim 이미지에서 postgresql 패키지를 설치하기 위해 필요 명령어 추가 + ffmpeg
+RUN apt update
+RUN apt install libpq-dev gcc ffmpeg -y
 
 # 프로젝트 실행에 필요한 패키지들을 설치합니다.
-RUN apt update && apt install -y ffmpeg
 RUN pip install tensorflow-cpu
 RUN pip install --no-deps spleeter
 RUN pip install --no-cache-dir -r requirements.txt
