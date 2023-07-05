@@ -71,9 +71,12 @@ CORS_ORIGIN_WHITELIST = [
     'http://3.34.188.200:8000',
 ]
 
+# # 임시용
+# CORS_ORIGIN_ALLOW_ALL = True;
+
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
-# CORS_ORIGIN_ALLOW_ALL = True
+
 CORS_ALLOWED_ORIGINS = [
     "https://claid.kr",
     "https://cdn.claid.kr",
@@ -264,3 +267,11 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MSG]"
+
+# Celery
+CELERY_BROKER_URL = 'amqp://rabbitmq'
+# CELERY_BROKER_URL = 'amqp://' + os.environ.get('CELERY_BROKER_URL') + ':5672'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

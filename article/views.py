@@ -130,6 +130,9 @@ class ArticleDetailView(APIView):
             article = get_object_or_404(Article, id = article_id)
                 # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
+                if article.song or article.article_image:
+                    article.song.delete()
+                    article.article_image.delete()
                 article.delete()
 
             user = request.user
@@ -336,6 +339,9 @@ class VocalNoticeDetailView(APIView):
             article = get_object_or_404(VocalNotice, id = article_id)
             # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
+                if article.song or article.article_image:
+                    article.song.delete()
+                    article.article_image.delete()
                 article.delete()
 
             user = request.user

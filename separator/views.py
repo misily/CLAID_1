@@ -25,7 +25,7 @@ if domain == '127.0.0.1':
 
 '''
 작성자 : 이준영
-내용 : 노래 분리
+내용 : 노래 업로드
 최초 작성일 : 2023.06.20
 '''
 def handle_uploaded_file(f):
@@ -39,7 +39,7 @@ def handle_uploaded_file(f):
 
 '''
 작성자 : 이준영
-내용 : 노래 업로드
+내용 : 노래 업로드 함수와 연결
 최초 작성일 : 2023.06.20
 수정자 : 이준영
 내용 : 비동기 수정
@@ -58,6 +58,7 @@ class UploadFileView(APIView):
             return Response({'message': '중복된 자료입니다.'}, status=status.HTTP_409_CONFLICT)
         
         separate_audio_task.delay(file_name)
+        
         result = SeparationResult.objects.create(
             user=request.user,
             file_name=file_name,
