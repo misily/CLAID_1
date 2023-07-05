@@ -60,20 +60,19 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-ALLOWED_HOSTS = ['*']
-
 # CORS
+
+
+# 임시용
+ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True;
+
+# 선별용
 CORS_ORIGIN_WHITELIST = [
     'https://claid.kr',
     'https://cdn.claid.kr',
     'http://127.0.0.1:5500',
-    'http://3.34.188.200:8000',
 ]
-
-# # 임시용
-# CORS_ORIGIN_ALLOW_ALL = True;
-
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 
@@ -81,7 +80,6 @@ CORS_ALLOWED_ORIGINS = [
     "https://claid.kr",
     "https://cdn.claid.kr",
     'http://127.0.0.1:5500',
-    'http://3.34.188.200:8000',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -270,8 +268,22 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MSG]"
 
 # Celery
 CELERY_BROKER_URL = 'amqp://rabbitmq'
+
+# 잘안되는 듯?
 # CELERY_BROKER_URL = 'amqp://' + os.environ.get('CELERY_BROKER_URL') + ':5672'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+
+# RABBITMQ = {
+# "PROTOCOL": "amqp", # in prod change with "amqps"
+# "HOST": os.getenv("RABBITMQ_HOST", "localhost"),
+# "PORT": os.getenv("RABBITMQ_PORT", 5672),
+# "USER": os.getenv("RABBITMQ_USER", "guest"),
+# "PASSWORD": os.getenv("RABBITMQ_PASSWORD", "guest"),
+# }
+# CELERY_BROKER_URL = f"{RABBITMQ['PROTOCOL']}://{RABBITMQ['USER']}:{RABBITMQ['PASSWORD']}@{RABBITMQ['HOST']}:{RABBITMQ['PORT']}"
+# CELERY_BROKER_URL = 'amqp://[user_name]:[password]@localhost/[vhost_name]'
+
+
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
