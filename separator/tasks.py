@@ -6,7 +6,7 @@ from celery import Celery
 
 app = Celery('myapp')
 logger = get_task_logger(__name__)
-
+# app.config_from_object('celeryconfig')
 @shared_task
 def separate_audio_task(file_name):
     result = {}
