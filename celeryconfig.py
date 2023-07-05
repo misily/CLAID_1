@@ -20,7 +20,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.autodiscover_tasks()
 
-CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_BACKEND = 'django-db'
 
 # Worker 설정
 # app.conf.worker_prefetch_multiplier = 1
