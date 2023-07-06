@@ -38,8 +38,8 @@ def separate_audio(file_name):
     vocals_path = os.path.join(output_path, f'{file_name}/vocals.mp3')
     accompaniment_path = os.path.join(output_path, f'{file_name}/accompaniment.mp3')
     
-    vocals_path = vocals_path.replace(settings.MEDIA_ROOT, 'http://' + domain + '/media').replace("\\", "/")
-    accompaniment_path = accompaniment_path.replace(settings.MEDIA_ROOT, 'http://' + domain + '/media').replace("\\", "/")
+    vocals_path = vocals_path.replace(settings.MEDIA_ROOT, domain + '/media').replace("\\", "/")
+    accompaniment_path = accompaniment_path.replace(settings.MEDIA_ROOT, domain + '/media').replace("\\", "/")
     
     os.remove(file_path)
     

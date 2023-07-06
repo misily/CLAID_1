@@ -60,42 +60,35 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-# CORS
 
+# CORS
 
 # 임시용
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True;
 
-# 선별용
-CORS_ORIGIN_WHITELIST = [
-    'https://claid.kr',
-    'https://cdn.claid.kr',
-    'http://127.0.0.1:5500',
-    'http://3.34.95.122',
-]
-CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
-
-
-CORS_ALLOWED_ORIGINS = [
-    "https://claid.kr",
-    "https://cdn.claid.kr",
-    'http://127.0.0.1:5500',
-    'http://3.34.95.122',
-]
-
+# 모든 출처로부터의 요청 허용
+CORS_ALLOW_ALL_ORIGINS = True
+# CSRF_TRUSTED_ORIGINS에 모든 도메인 허용 (향후 보안 이슈에 유의해야 함)
+CSRF_TRUSTED_ORIGINS = []
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_METHODS = (
+# 접속을 허용할 host를 설정합니다.
+# ALLOWED_HOSTS = ['backend', ]
+# CORS 허용 목록에 ec2 ip를 추가합니다.
+# CORS_ORIGIN_WHITELIST = ['https://claid.kr']
+# CSRF 허용 목록을 CORS와 동일하게 설정합니다.
+# CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
+
+CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
     "OPTIONS",
     "PATCH",
     "POST",
     "PUT",
-)
+]
 
-CORS_ALLOW_HEADERS = (
+CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
     "authorization",
@@ -105,7 +98,11 @@ CORS_ALLOW_HEADERS = (
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-)
+]
+
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://\w+\.claid\.kr$",
+# ]
 
 AUTH_USER_MODEL = "user.User"
 
