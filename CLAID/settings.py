@@ -72,6 +72,7 @@ CORS_ORIGIN_WHITELIST = [
     'https://claid.kr',
     'https://cdn.claid.kr',
     'http://127.0.0.1:5500',
+    'http://3.34.95.122',
 ]
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
@@ -80,6 +81,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://claid.kr",
     "https://cdn.claid.kr",
     'http://127.0.0.1:5500',
+    'http://3.34.95.122',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -270,7 +272,10 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MSG]"
 CELERY_BROKER_URL = 'amqp://rabbitmq'
 
 # 잘안되는 듯?
-# CELERY_BROKER_URL = 'amqp://' + os.environ.get('CELERY_BROKER_URL') + ':5672'
+# CELERY_BROKER_URL="amqp://ec2-3-34-95-122.ap-northeast-2.compute.amazonaws.com:5672"
+
+# CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
+
 
 # RABBITMQ = {
 # "PROTOCOL": "amqp", # in prod change with "amqps"

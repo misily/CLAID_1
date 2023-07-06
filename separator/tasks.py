@@ -4,7 +4,8 @@ from .utils import handle_uploaded_file, separate_audio
 from separator.models import SeparationResult
 from celery import Celery
 
-app = Celery('myapp')
+app = Celery('tasks')
+# app = Celery('tasks', broker='pyamqp://guest@localhost//')
 logger = get_task_logger(__name__)
 # app.config_from_object('celeryconfig')
 @shared_task
