@@ -110,8 +110,6 @@ class ArticleDetailView(APIView):
             if request.user == article.user:
                 serializer = ArticleCreateSerializer(article, data=request.data)
                 if serializer.is_valid():
-                    article.song.delete()
-                    article.article_image.delete()
                     serializer.save(user=request.user)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
