@@ -4,31 +4,31 @@ from django.conf import settings
 from django.db import models
 from user.models import User
 from django.utils import timezone
+from os.path import splitext
 import shutil
+
+'''
+    작성자: 이준영
+    내용: 음성분리관련 모델 정의
+    작성일: 2023.07.03
+    수정자: 이준영
+    내용: 폴더별 유니크하게 적용
+    수정일: 2023.07.08
+'''
+def user_directory_path(instance, filename):
+    return f"separator/{instance.user.id}/{timezone.now().strftime('%Y%m%d_%H%M%S')}/{filename}"
 
 class SeparationResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    file_name = models.CharField(max_length=255)
+    file_name = models.CharField(max_length=255, blank=True)
+    audio_file = models.FileField(upload_to=user_directory_path)
     vocals_path = models.CharField(max_length=255)
     accompaniment_path = models.CharField(max_length=255)
     state = models.CharField(max_length=255, default='waiting')
     created_at = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return self.file_name
-
-    def delete(self, *args, **kwargs):
-        vocals_path_relative = urlparse(self.vocals_path).path.lstrip('/media/')
-        accompaniment_path_relative = urlparse(self.accompaniment_path).path.lstrip('/media/')
-
-        # 파일 이름을 제외한 부모 디렉토리 경로를 찾습니다.
-        vocals_parent_dir = os.path.dirname(os.path.join(settings.MEDIA_ROOT, vocals_path_relative))
-        accompaniment_parent_dir = os.path.dirname(os.path.join(settings.MEDIA_ROOT, accompaniment_path_relative))
-
-        # 해당 디렉토리가 있다면 삭제합니다.
-        if os.path.isdir(vocals_parent_dir):
-            shutil.rmtree(vocals_parent_dir)
-        if os.path.isdir(accompaniment_parent_dir):
-            shutil.rmtree(accompaniment_parent_dir)
-
-        super().delete(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        # 오직 처음 생성될 때만 실행
+        if not self.id and self.audio_file:
+            self.file_name = splitext(self.audio_file.name.split('/')[-1])[0]
+        super().save(*args, **kwargs)

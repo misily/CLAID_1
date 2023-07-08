@@ -1,34 +1,27 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from .utils import handle_uploaded_file, separate_audio
-from separator.models import SeparationResult
+from .utils import separate_audio
 from celery import Celery
 
+'''
+작성자 : 이준영
+내용 : 오디오 분리 비동기 작업
+수정일 : 2023.07.02
+수정자 : 이준영
+내용 : docs 추가
+    file_name으로 중복될 수 있어 result_id로 바꿈
+    utils.py로 통합
+수정일 : 2023.07.08
+'''
 app = Celery('tasks')
-# app = Celery('tasks', broker='pyamqp://guest@localhost//')
 logger = get_task_logger(__name__)
 # app.config_from_object('celeryconfig')
+
 @shared_task
-def separate_audio_task(file_name):
-    result = {}
+def separate_audio_task(result_id):
     try:
-        result = SeparationResult.objects.get(file_name=file_name)
-        result.state = 'working'
-        result.save()
-        
-        # 파일 처리 작업을 수행
-        audio_files = separate_audio(file_name)
-        
-        # 분리된 음원 파일 경로를 업데이트
-        result.vocals_path = audio_files['vocals']
-        result.accompaniment_path = audio_files['accompaniment']
-        result.state = 'success'
-        result.save()
-
-        logger.info(f"Audio separation completed: {file_name}")
-
+        logger.info(f"Audio separation started: {result_id}")
+        separate_audio(result_id)
+        logger.info(f"Audio separation completed: {result_id}")
     except Exception as e:
-        result = SeparationResult.objects.get(file_name=file_name)
-        result.state = 'error'
-        result.save()
-        logger.error(f"Audio separation error: {file_name}. Error: {e}")
+        logger.error(f"Audio separation task failed: {e}")
