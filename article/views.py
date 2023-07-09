@@ -103,12 +103,15 @@ class ArticleDetailView(APIView):
     내용 : 게시글 수정하기
     최초 작성일 : 2023.06.08
     업데이트 일자 : 2023.06.08
+    수정자 : 이준영
+    내용 : patch의 역할을 수행할 수 있게 수정함.
+    수정일 : 2023.07.09
     '''
     def patch(self, request, article_id):
             article = get_object_or_404(Article, id = article_id)
                 # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
-                serializer = ArticleCreateSerializer(article, data=request.data)
+                serializer = ArticleCreateSerializer(article, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save(user=request.user)
                     return Response(serializer.data, status=status.HTTP_200_OK)
