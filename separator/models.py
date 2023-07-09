@@ -21,7 +21,7 @@ def user_directory_path(instance, filename):
 class SeparationResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     file_name = models.CharField(max_length=255, blank=True)
-    audio_file = models.FileField(upload_to=user_directory_path)
+    audio_file = models.FileField(upload_to='uploads/%Y/%m/%d/', default='default_value')
     vocals_path = models.CharField(max_length=255)
     accompaniment_path = models.CharField(max_length=255)
     state = models.CharField(max_length=255, default='waiting')
