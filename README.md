@@ -49,11 +49,7 @@
     - 보컬과 악기로 나누어줌.
 2. 보컬 / 악기 `GET`
     - 목록
-<<<<<<< HEAD
         - 음원 분리한 목록들을 PageNumberPagination을 Custom해서 5개씩 나열해줌.
-=======
-        - 음원 분리한 목록들을 나열해줌.
->>>>>>> fadc4adb123ba9ff9d4f31902b82adf59497e61f
         - 음원들을 wave로 표현
     - 상세페이지
         - 음원들을 wave로 표현
@@ -170,8 +166,5 @@
 
 🤎 프로젝트 타임라인
 ------
-<<<<<<< HEAD
 [프로젝트 타임라인](https://juicy-bow-33d.notion.site/04d66670f2424788843bb1c5170dc8c8?v=f865c6b085ad49b28e3fa0b408aab2de&pvs=4)
-=======
-[프로젝트 타임라인](https://juicy-bow-33d.notion.site/04d66670f2424788843bb1c5170dc8c8?v=f865c6b085ad49b28e3fa0b408aab2de&pvs=4)
->>>>>>> fadc4adb123ba9ff9d4f31902b82adf59497e61f
+
