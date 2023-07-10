@@ -1,22 +1,11 @@
 from pathlib import Path
 from datetime import timedelta
 import os
-
-# from django.core.exceptions import ImproperlyConfigured
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# 소셜 설정
 SOCIAL_OUTH_CONFIG = {
-    # 카카오 키
     'KAKAO_REST_API_KEY': os.environ.get('KAKAO_REST_API_KEY'),
     'KAKAO_REDIRECT_URL': os.environ.get('KAKAO_REDIRECT_URL'),
     'KAKAO_SECRET_KEY': os.environ.get('KAKAO_SECRET_KEY'),
@@ -25,8 +14,6 @@ SOCIAL_OUTH_CONFIG = {
     'GOOGLE_API_KEY': os.environ.get('GOOGLE_API_KEY')
 }
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -61,22 +48,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CORS
-
-## 임시용
-# ALLOWED_HOSTS = ['*']
-
-# # 모든 출처로부터의 요청 허용
-# CORS_ALLOW_ALL_ORIGINS = True
-# # CSRF_TRUSTED_ORIGINS에 모든 도메인 허용 (향후 보안 이슈에 유의해야 함)
-# CSRF_TRUSTED_ORIGINS = []
-# CORS_ALLOW_CREDENTIALS = True
-
-# 접속을 허용할 host를 설정합니다.
 ALLOWED_HOSTS = ['backend', '127.0.0.1' ]
-# CORS 허용 목록에 ec2 ip를 추가합니다.
+
 CORS_ORIGIN_WHITELIST = ['https://claid.kr', 'http://127.0.0.1:5500']
-# CSRF 허용 목록을 CORS와 동일하게 설정합니다.
+
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 CORS_ALLOW_METHODS = [
@@ -100,13 +75,7 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     r"^https://\w+\.claid\.kr$",
-# ]
-
 AUTH_USER_MODEL = "user.User"
-
-# BASE_URL = "http://127.0.0.1:8000/"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -186,10 +155,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
@@ -198,19 +163,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = 'static/'
 
-# Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "media/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -265,27 +222,4 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MSG]"
 
-# Celery
 CELERY_BROKER_URL = 'amqp://rabbitmq'
-
-# 잘안되는 듯?
-# CELERY_BROKER_URL="amqp://ec2-3-34-95-122.ap-northeast-2.compute.amazonaws.com:5672"
-
-# CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
-
-
-# RABBITMQ = {
-# "PROTOCOL": "amqp", # in prod change with "amqps"
-# "HOST": os.getenv("RABBITMQ_HOST", "localhost"),
-# "PORT": os.getenv("RABBITMQ_PORT", 5672),
-# "USER": os.getenv("RABBITMQ_USER", "guest"),
-# "PASSWORD": os.getenv("RABBITMQ_PASSWORD", "guest"),
-# }
-# CELERY_BROKER_URL = f"{RABBITMQ['PROTOCOL']}://{RABBITMQ['USER']}:{RABBITMQ['PASSWORD']}@{RABBITMQ['HOST']}:{RABBITMQ['PORT']}"
-# CELERY_BROKER_URL = 'amqp://[user_name]:[password]@localhost/[vhost_name]'
-
-
-# CELERY_RESULT_BACKEND = 'django-db'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
