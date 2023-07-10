@@ -320,7 +320,7 @@ class VocalNoticeDetailView(APIView):
             article = get_object_or_404(VocalNotice, id = article_id)
                 # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
-                serializer = VocalNoticeCreateSerializer(article, data=request.data)
+                serializer = VocalNoticeCreateSerializer(article, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save(user=request.user)
                     return Response(serializer.data, status=status.HTTP_200_OK)
