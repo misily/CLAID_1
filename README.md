@@ -2,6 +2,10 @@
 # 프로젝트명
 - CLAID
 
+# 배포
+[CLAID] (https://claid.kr)
+
+
 # 프로젝트 정보
 - Back-End
     - Python 3.10.6
@@ -31,6 +35,7 @@
     ~~MySQL~~   (not yet)
 
 # Docs Convention
+```
 class KakaoLoginView:
 '''
 작성자 :홍길동
@@ -39,6 +44,7 @@ class KakaoLoginView:
 업데이트 일자 : 2023.06.07
 '''
 def ..........
+```
 
 # Article
 - 게시글 전체보기
