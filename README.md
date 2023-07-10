@@ -148,9 +148,9 @@
 2. 검색결과 `GET`
     - 가져온 결과를 보여줌 내용(contents)에는 제한을 두어 일정 글자수 이상은 ...으로 표기됨 
 ***
-💜 ERD 수정해야함.
+💜 ERD
 ------
-![image](https://www.notion.so/S-A-4e0242adf881433d9273057cca09496a?pvs=4#d9b3e46023a14212ac53ebd6401a81f4)
+![image](https://file.notion.so/f/s/33d7e11e-7177-4254-841b-7e672436818a/b7-claid-erd.png?id=d9b3e460-23a1-4212-ac53-ebd6401a81f4&table=block&spaceId=881fbe82-e5ca-47db-9089-ae93ae8f7525&expirationTimestamp=1689069600000&signature=ZvAYfMtp6Xi0_Uyi8g_HWdGCqqMO9O8dmLnOYZW32G4&downloadName=b7-claid-erd.png)
 
 💚 API 명세
 ------
