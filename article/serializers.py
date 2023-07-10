@@ -32,11 +32,15 @@ class VocalNoticeSerializer(serializers.ModelSerializer):
         model = VocalNotice
         fields = '__all__'
 
-
+'''
+수정자 : 이준영
+내용 : 안쓰는 field 삭제, 핫픽스
+업데이트 일자 : 2023.07.10
+'''
 class VocalNoticeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = VocalNotice
-        fields = ('title', 'content', 'article_image')
+        fields = ('title', 'content',)
 
 
 # 작성자 : 김은수
