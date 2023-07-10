@@ -55,7 +55,11 @@ class HitsCount(models.Model):
 
 
 
-
+'''
+수정자 : 이준영
+내용 : 안쓰는 field 삭제, 핫픽스
+업데이트 일자 : 2023.07.10
+'''
 # 방법공유
 class VocalNotice(models.Model):
     current_time = datetime.now()
@@ -63,7 +67,6 @@ class VocalNotice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     content = models.TextField()
-    article_image = models.ImageField(upload_to='article/%Y/%m/%d/'+formatted_time, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     hits = models.BigIntegerField(default=0)

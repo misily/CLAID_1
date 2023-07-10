@@ -52,14 +52,17 @@ class UserSerializer(serializers.ModelSerializer):
     작성자 : 공민영
     내용 : 회원가입
     최초 작성일 : 2023.06.08
-    업데이트 일자 : 2023.06.29
     내용 : 이메일 전송 비동기 처리함
+    업데이트 일자 : 2023.06.29
+    수정자 : 이준영
+    내용 : domain이 동적이지 않아서 핫픽스
+    업데이트 일자 : 2023.07.10
     '''
     def send_email(self, user):
         message = (
                 "안녕하세요, {nickname}님!\n\n"
                 "회원가입 인증을 완료하려면 다음 링크를 클릭해주세요:\n"
-                "http://{domain}/user/activate/{uid}/{token}\n\n"
+                "{domain}/user/activate/{uid}/{token}\n\n"
                 "---\n"
                 "감사합니다!"
                 ).format(

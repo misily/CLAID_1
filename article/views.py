@@ -268,6 +268,9 @@ class VocalNoticeView(APIView):
     수정자 : 공민영
     수정내용 : 게시글 작성할 때 마다 포인트 지급, 이력 저장
     업데이트 일자 : 2023.07.02
+    수정자 : 이준영
+    내용 : 수정이 안되어 핫 픽스, models에 맞게 다시 수정
+    수정일 : 2023.07.10
     '''
     def post(self, request):
         serializer = VocalNoticeCreateSerializer(data=request.data)
@@ -315,12 +318,15 @@ class VocalNoticeDetailView(APIView):
     작성자 : 공민영, 왕규원
     내용 : 보컬로이드 방법공유 게시글 수정하기
     최초 작성일 : 2023.06.19
+    수정자 : 이준영
+    내용 : 수정이 안되어 핫픽스, models에 맞게 다시 수정
+    최초 작성일 : 2023.07.10
     '''
     def patch(self, request, article_id):
             article = get_object_or_404(VocalNotice, id = article_id)
                 # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
-                serializer = VocalNoticeCreateSerializer(article, data=request.data)
+                serializer = VocalNoticeCreateSerializer(article, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save(user=request.user)
                     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -337,14 +343,14 @@ class VocalNoticeDetailView(APIView):
     수정자 : 공민영
     수정내용 : 게시글을 작성한지 24시간이 지나기 전 삭제시 포인트 차감, 이력 저장
     업데이트 일자 : 2023.07.02
+    수정자 : 이준영
+    내용 : 삭제가 안되어 핫 픽스, models에 맞게 다시 수정
+    수정일 : 2023.07.10
     '''
     def delete(self, request, article_id):
             article = get_object_or_404(VocalNotice, id = article_id)
             # 본인이 작성한 게시글이 맞다면
             if request.user == article.user:
-                if article.song or article.article_image:
-                    article.song.delete()
-                    article.article_image.delete()
                 article.delete()
 
             user = request.user
