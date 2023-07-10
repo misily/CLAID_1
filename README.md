@@ -3,7 +3,7 @@
 - CLAID
 
 # 배포
-[CLAID] (https://claid.kr)
+[CLAID](https://claid.kr)
 
 
 # 프로젝트 정보
